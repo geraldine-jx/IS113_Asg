@@ -18,9 +18,14 @@
     <h1>Get your Best Buddy Now!</h1>
     <p>
         <!-- Lead to give up page -->
-        <button type="rehome">Rehome </button>
+       <a href="/give-up-dog">
+            <button>Rehome</button>
+        </a>
+
         <!-- Lead to profile page -->
-        <button type="profile">Profile</button>
+        <a href="/profile/update">
+            <button>Profile</button>
+        </a>
     </p>
     
     <table border ="1"> 
@@ -40,10 +45,9 @@
 
                 <!-- Buttons -->
                 <!-- Lead to adoption page -->
-                <form action="/adopt-page" method="GET">
-                    <input type="hidden" name="petName" value="<%= pet.name %>">
-                    <button type="submit">Adopt</button>
-                </form>
+                <a href="/adopt-dog">
+                    <button>Adopt</button>
+                </a>
                 
                 <button type="details">More Info</button>
                 <span class="heart" onclick="toggleHeart(this)">🤍</span>

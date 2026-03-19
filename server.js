@@ -12,186 +12,72 @@ server.use(express.urlencoded({ extended: true }));
 
 const home = require("./routes/homePage");
 
+server.get("/give-up-dog", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "give-up-dog.html"));
+});
+
+server.get("/adopt-dog", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "adopt-dog.html"));
+});
+
+server.get("/profile/update", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "profile.html"));
+});
+
+
 server.use("/home-display", home);
+let user = {
+    username: "valencia",
+    email: "valencia@gmail.com",
+    displayName: "val",
+    bio: "i love dogs",
+    contact: "81234567",
+    address: "singapore",
+    dateJoined: "12/3/2026"
+};
 
-
-/* TO REDIRECT ROUTE FOR USER OR ADMIN TO THEIR PAGES*/ 
-server.get("/auth/login", (req, res) => {
-    const usertype = req.query.usertype;
-    console.log(req.query);
-
-    if (usertype === "user") {
-        res.sendFile(path.join(__dirname, "public", "login-user.html"));
-    } else if (usertype === "admin") {
-        res.sendFile(path.join(__dirname, "public", "login-admin.html"));
-    } else {
-        res.send("Invalid user type");
-    }
+server.get("/profile", (req, res) => {
+    res.sendFile(__dirname + "/public/profile.html");
 });
 
-// LEAD TO REGISTER PAGE FOR ADMIN OR USER
-server.get("/auth/register", (req, res) => {
-    const usertype = req.query.usertype;
+server.post("/profile/update", (req, res) => {
+    let { displayName, bio, contact, address } = req.body;
+    let errors = [];
 
-    if (usertype === "user") {
-        res.sendFile(path.join(__dirname, "public", "register-user.html"));
-    } else if (usertype === "admin") {
-        res.sendFile(path.join(__dirname, "public", "register-admin.html"));
-    } else {
-        res.send("Invalid user type");
-    }
-});
-
-const users = [];
-console.log(users)
-
-
-// USER REGISTRATION PAGE LOGIC
-server.post("/auth/register-admin-process", (req, res) => {
-    const fields = {
-        usertype: "admin",
-        employeeID: req.body.employeeID,
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.password,
-        confirmPassword: req.body.confirmPassword,
-        displayName: req.body.displayName,
-        contact: req.body.contact,
-        address: req.body.address,
-        bio: req.body.bio
-    };
-
-    const missingFields = [];
-
-    for (const key in fields) {
-        if (key !== "bio" && key !== "usertype" && fields[key] === "") {
-            missingFields.push(`<li>${key}</li>`);
-        }
+    if (!displayName || displayName.trim() === "") {
+        errors.push("Display Name cannot be blank.");
     }
 
-    if (missingFields.length > 0) {
-        res.send(`
-            <h1>Please fill in:</h1>
-            <ul>${missingFields.join("")}</ul>
-        `);
-        return;
+    contact = (contact || "").replaceAll(" ", "");
+
+    if (!(contact.startsWith("8") || contact.startsWith("9")) || contact.length !== 8) {
+        errors.push("Contact must be a Singapore mobile number (8 digits starting with 8 or 9)");
     }
 
-    if (fields.password !== fields.confirmPassword) {
-        res.send("Passwords must match!!");
-        return;
+    if (!address || address.trim() === "") {
+        errors.push("Address cannot be blank.");
     }
 
-    users.push({
-        usertype: fields.usertype,
-        employeeID: fields.employeeID,
-        username: fields.username,
-        email: fields.email,
-        password: fields.password,
-        displayName: fields.displayName,
-        contact: fields.contact,
-        address: fields.address,
-        bio: fields.bio
-    });
-
-    res.send("Admin registered successfully");
-});
-
-//ADMIN REGISTRATION PAGE LOGIC
-server.post("/auth/register-admin-process", (req, res) => {
-    const employeeIDList = ["0001", "0002", "0003"]         //DATA TO BE EXTRACTED FROM MONGODB
-    
-   const fields = {
-        usertype: "admin",
-        employeeID: req.body.employeeID,
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.password,
-        confirmPassword: req.body.confirmPassword,
-        displayName: req.body.displayName,
-        contact: req.body.contact,
-        address: req.body.address,
-        bio: req.body.bio
-    };
-
-
-    const missingFields = [];
-    let found = false;
-
-    for (let i = 0; i < employeeIDList.length; i++) {
-        if (employeeIDList[i] === fields["employeeID"]) {
-            found = true;
-        }
-    }
-    if (!found) {
-        res.send("Unable to sign up, EmployeeID not in list");
-        return;
-    }
-    
-     for (const key in fields) {
-        if (key !== "bio" && key !== "usertype" && fields[key] === "") {
-            missingFields.push(`<li>${key}</li>`);
-        }
-    }
-
-    if (missingFields.length > 0) {
-        res.send(`
-            <h1>Please fill in:</h1>
+    if (errors.length > 0) {
+        return res.send(`
+            <h2>Validation Errors</h2>
             <ul>
-                ${missingFields.join("")}
+                ${errors.map(e => `<li>${e}</li>`).join("")}
             </ul>
+            <a href="/profile">Go Back</a>
         `);
-        return;
     }
-    if(fields["password"] !== fields["confirmPassword"]){
-        res.send("Passwords must match!!")
-    } 
 
-    
-users.push({
-        usertype: fields.usertype,
-        employeeID: fields.employeeID,
-        username: fields.username,
-        email: fields.email,
-        password: fields.password,
-        displayName: fields.displayName,
-        contact: fields.contact,
-        address: fields.address,
-        bio: fields.bio
-    });
-    
-    res.send("Admin registered successfully");
+    user.displayName = displayName;
+    user.bio = bio;
+    user.contact = contact;
+    user.address = address;
 
+    res.send(`
+        <h2>Profile updated successfully!</h2>
+        <a href="/profile">Back to Profile</a>
+    `);
 });
-
-
-//ADMIN LOGIN PROCESS 
-server.post("/adminlogin-process", (req, res) => {
-    const employeeID = req.body.employeeID;
-    const username = req.body.username;
-    const password = req.body.password;
-
-    let found = false;
-
-    for (let i = 0; i < users.length; i++) {
-        if (
-            users[i].usertype === "admin" &&
-            users[i].employeeID === employeeID &&
-            users[i].username === username &&
-            users[i].password === password
-        ) {
-            found = true;
-        }
-    }
-
-    if (found) {
-        res.send("Login successful!");
-    } else {
-        res.send("User does not exist");
-    }
-}); 
-
-
 
 //End of Express Router Code
 
