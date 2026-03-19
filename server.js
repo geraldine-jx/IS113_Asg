@@ -2,6 +2,11 @@
 const express = require("express");
 const server = express();
 const path = require("path");
+<<<<<<< Updated upstream
+=======
+const mongoose = require("mongoose");
+const authRoutes = require("./routes/authRoutes");
+>>>>>>> Stashed changes
 
 server.set("view engine", "ejs");
 
@@ -12,13 +17,7 @@ server.use(express.urlencoded({ extended: true }));
 
 const home = require("./routes/homePage");
 
-server.get("/give-up-dog", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "give-up-dog.html"));
-});
 
-server.get("/adopt-dog", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "adopt-dog.html"));
-});
 
 server.get("/profile/update", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "profile.html"));
