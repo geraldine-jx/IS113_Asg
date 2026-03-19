@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin Review: Dogs for Adoption</title>
+
+</head>
+
+<body>
+    <h1>Admin Review Give-up Submissions</h1>
+    <table border = '1'>
+        <thead>
+            <tr>
+                <th>Submission ID</th>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Status</th>
+                <th>Approve</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (submissions.length ===0){ %>
+                <tr>
+                    <td colspan = "7"> No Submissions found</td>
+                </tr>
+            <% } %>
+            <% submissions.forEach(submission => { %>
+                <tr>
+                    <td><%= submission.id%></td>
+                    <td>
+                        <% if (submission.photo) { %>
+                            <img src = "<%=submission.photo %>" alt="Pet photo">
+                            <% } else { %>
+                             No photo
+                             <% } %>
+                    </td>
+                    <td><%= submission.name %></td>
+                    <td><%= submission.age %></td>
+                    <td><%= submission.status %></td>
+                    <td>
+                        <% if (submission.status === "Pending") { %>
+                        <form action="/home-display/admin/giveups/<%= submission.id %>/approve" method="POST">
+                            <button class="action-btn" type="submit">✓</button>
+                        </form>
+
+                        <form action="/home-display/admin/giveups/<%= submission.id %>/reject" method="POST">
+                            <button class="action-btn" type="submit">✗</button>
+                        </form>
+                        <% } else { %>
+                        -
+                        <% } %>
+                    </td>
+                     <td>
+                    <a href="/home-display/admin/giveups/<%= submission.id %>">view</a>
+                    </td>
+                </tr>  
+                <% }) %>
+        </tbody>
+    </table>
+</body>
+</html>
