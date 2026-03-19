@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Registration</title>
+</head>
+<body>
+  <h1>Admin Registration</h1>
+
+  <% if (error) { %>
+    <div><%- error %></div>
+  <% } %>
+
+  <form action="/auth/register-admin-process" method="post">
+    Employee ID:<br>
+    <input type="text" name="employeeID">
+    <br><br>
+
+    Username:<br>
+    <input type="text" name="username">
+    <br><br>
+
+    Email:<br>
+    <input type="email" name="email">
+    <br><br>
+
+    Password:<br>
+    <input type="password" name="password">
+    <br><br>
+
+    Confirm Password:<br>
+    <input type="password" name="confirmPassword">
+    <br><br>
+
+    Display Name:<br>
+    <input type="text" name="displayName">
+    <br><br>
+
+    Contact:<br>
+    <input type="text" name="contact">
+    <br><br>
+
+    Address:<br>
+    <input type="text" name="address">
+    <br><br>
+
+    Bio:<br>
+    <textarea name="bio"></textarea>
+    <br><br>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <br>
+
+  <a href="/auth/login?usertype=admin">
+    <button type="button">Back to Login</button>
+  </a>
+</body>
+</html>

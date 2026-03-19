@@ -4,7 +4,6 @@ const express = require("express");
 const server = express();
 const path = require("path");
 const mongoose = require("mongoose");
-
 const authRoutes = require("./routes/authRoutes");
 
 server.set("view engine", "ejs");
