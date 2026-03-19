@@ -1,13 +1,32 @@
 // Main area to facilitate the Pets platform
+require("dotenv").config();
 const express = require("express");
 const server = express();
 const path = require("path");
+const mongoose = require("mongoose");
+<<<<<<< Updated upstream
+const authRoutes = require("./routes/authRoutes");
+=======
+
+//connect mongoose database
+mongoose.connect("your_connection_string_here")
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.log(err));
+>>>>>>> Stashed changes
 
 server.set("view engine", "ejs");
 
 server.use("/", express.static(path.join(__dirname, "public")))
 server.use(express.urlencoded({ extended: true }));
 
+
+// JQ PARTTTT
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.log(err));
+
+server.use("/", authRoutes);
+// END OF JQ PARTTT
 //Start of Express Router Code
 
 const home = require("./routes/homePage");

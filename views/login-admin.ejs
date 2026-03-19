@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Sign-in/Sign-up</title>
+</head>
+<body>
+  <h1>Admin Sign-in/Signup</h1>
+
+  <% if (error) { %>
+    <p><%= error %></p>
+  <% } %>
+
+  <form action="/adminlogin-process" method="post">
+    Employee ID:<br>
+    <input type="text" name="employeeID">
+    <br><br>
+
+    Username:<br>
+    <input type="text" name="username">
+    <br><br>
+
+    Password:<br>
+    <input type="password" name="password">
+    <br><br>
+
+    <button type="submit">Sign-in</button>
+  </form>
+
+  <br>
+
+  <a href="/auth/register?usertype=admin">
+    <button type="button">No Account? Register</button>
+  </a>
+</body>
+</html>
