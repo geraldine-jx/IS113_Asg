@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Sign-in/Sign-up</title>
+</head>
+<body>
+  <h1>User Sign-in/Signup</h1>
+
+  <% if (error) { %>
+    <p><%= error %></p>
+  <% } %>
+
+  <form action="/userlogin-process" method="post">
+    Username:<br>
+    <input type="text" name="username">
+    <br><br>
+
+    Password:<br>
+    <input type="password" name="password">
+    <br><br>
+
+    <button type="submit">Sign-in</button>
+  </form>
+
+  <br>
+
+  <a href="/auth/register?usertype=user">
+    <button type="button">No Account? Register</button>
+  </a>
+</body>
+</html>
