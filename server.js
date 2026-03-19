@@ -4,7 +4,15 @@ const express = require("express");
 const server = express();
 const path = require("path");
 const mongoose = require("mongoose");
+<<<<<<< Updated upstream
 const authRoutes = require("./routes/authRoutes");
+=======
+
+//connect mongoose database
+mongoose.connect("your_connection_string_here")
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.log(err));
+>>>>>>> Stashed changes
 
 server.set("view engine", "ejs");
 
