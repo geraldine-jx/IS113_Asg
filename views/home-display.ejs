@@ -3,15 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <title>Home</title>
+  <style>
+    .heart{
+    font-size: 22px;
+    padding: 5px;
+}
+    .heart:hover{
+    background-color: lightgray;
+    }
+</style>
 </head>
+
 <body>
     <h1>Get your Best Buddy Now!</h1>
+    <p>
+        <!-- Lead to give up page -->
+       <a href="/give-up-dog">
+            <button>Rehome</button>
+        </a>
 
+        <!-- Lead to profile page -->
+        <a href="/profile/update">
+            <button>Profile</button>
+        </a>
+    </p>
+    
     <table border ="1"> 
         <% pets.forEach(pet => { %>
         <tr>
             <td>
                 <!-- Display image -->
+                <img src="<%= pet.image %>" alt="<%= pet.name %>" width="100">
             </td>
             <td>
                 <!-- Display information -->
@@ -20,12 +42,31 @@
                 Age: <%= pet.age %> <br>
                 Status: <%= pet.status %><br>
                 <br>
-                <button type="adopt">Adopt</button> 
+
+                <!-- Buttons -->
+                <!-- Lead to adoption page -->
+                <a href="/adopt-dog">
+                    <button>Adopt</button>
+                </a>
+                
                 <button type="details">More Info</button>
+                <span class="heart" onclick="toggleHeart(this)">🤍</span>
+                <br>
             </td>
         </tr>
         <% }) %>
     </table>
-    
 </body>
+
+<script>
+    // later on can save the favorite in MongoDB & Load saved hearts when page loads
+    function toggleHeart(element){
+
+    if(element.innerHTML === "🤍"){
+        element.innerHTML = "❤️"
+    }else{
+        element.innerHTML = "🤍"
+    }}
+</script>
+
 </html>
