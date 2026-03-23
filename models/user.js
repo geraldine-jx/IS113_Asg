@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
     bio: {
         type: String
     },
+    favourites: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Pet"
+    }],
     dateJoined: {
         type: Date,
         default: Date.now

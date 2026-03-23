@@ -25,6 +25,36 @@ const formatDateJoinedForLog = (date) => {
     });
 };
 
+const escapeRegExp = (value) => {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
+const buildMissingFieldsError = (missingFields) => {
+    return `Please fill in:<ul>${missingFields.join("")}</ul>`;
+};
+
+const renderAdminUsersPage = async (res, options = {}) => {
+    const search = options.search ? options.search.trim() : "";
+    const filter = { usertype: "user" };
+
+    if (search !== "") {
+        const searchPattern = new RegExp(escapeRegExp(search), "i");
+        filter.$or = [
+            { username: searchPattern },
+            { displayName: searchPattern }
+        ];
+    }
+
+    const users = await User.find(filter).sort({ username: 1 });
+
+    res.render("admin-view-users", {
+        users,
+        search,
+        error: options.error || null,
+        message: options.message || null
+    });
+};
+
 exports.showMainPage = (req, res) => {
     res.sendFile(path.join(__dirname, "../views/mainpage.html"));
 };
@@ -76,7 +106,7 @@ exports.registerUser = async (req, res) => {
 
     if (missingFields.length > 0) {
         res.render("register-user", {
-            error: `Please fill in:<ul>${missingFields.join("")}</ul>`
+            error: buildMissingFieldsError(missingFields)
         });
         return;
     }
@@ -94,7 +124,13 @@ exports.registerUser = async (req, res) => {
     });
 
     if (existingUser) {
-        res.render("register-user", { error: "Username or email already exists" });
+        let errorMessage = "Email already exists";
+
+        if (existingUser.username === fields.username) {
+            errorMessage = "Username already exists";
+        }
+
+        res.render("register-user", { error: errorMessage });
         return;
     }
 
@@ -155,6 +191,66 @@ exports.loginUser = async (req, res) => {
     // res.redirect("/user/home");
 };
 
+exports.showForgotPasswordPage = (req, res) => {
+    res.render("forgot-password-user", { error: null, message: null });
+};
+
+exports.showAdminDashboardPage = (req, res) => {
+    res.render("admin-dashboard");
+};
+
+exports.resetUserPassword = async (req, res) => {
+    const fields = {
+        username: req.body.username,
+        email: req.body.email,
+        newPassword: req.body.newPassword,
+        confirmPassword: req.body.confirmPassword
+    };
+
+    const missingFields = [];
+
+    for (const key in fields) {
+        if (fields[key] === "") {
+            missingFields.push(`<li>${key}</li>`);
+        }
+    }
+
+    if (missingFields.length > 0) {
+        res.render("forgot-password-user", {
+            error: buildMissingFieldsError(missingFields),
+            message: null
+        });
+        return;
+    }
+
+    if (fields.newPassword !== fields.confirmPassword) {
+        res.render("forgot-password-user", {
+            error: "Passwords must match!!",
+            message: null
+        });
+        return;
+    }
+
+    const foundUser = await User.findOne({
+        usertype: "user",
+        username: fields.username,
+        email: fields.email
+    });
+
+    if (!foundUser) {
+        res.render("forgot-password-user", {
+            error: "No user matched the username and email provided",
+            message: null
+        });
+        return;
+    }
+
+    foundUser.password = fields.newPassword;
+    await foundUser.save();
+
+    res.render("login-user", { error: "Password updated successfully. Please sign in." });
+};
+
 exports.registerAdmin = async (req, res) => {
     const employeeIDList = ["0001", "0002", "0003"];
 
@@ -181,7 +277,7 @@ exports.registerAdmin = async (req, res) => {
 
     if (missingFields.length > 0) {
         res.render("register-admin", {
-            error: `Please fill in:<ul>${missingFields.join("")}</ul>`
+            error: buildMissingFieldsError(missingFields)
         });
         return;
     }
@@ -272,7 +368,42 @@ exports.loginAdmin = async (req, res) => {
         return;
     }
 
-    res.send("Login successful!");
-    // later change to:
-    // res.redirect("/admin/dashboard");
+    res.redirect("/auth/admin/dashboard");
+};
+
+exports.showAdminUsersPage = async (req, res) => {
+    await renderAdminUsersPage(res, {
+        search: req.query.search || ""
+    });
+};
+
+exports.deleteUser = async (req, res) => {
+    const userId = req.body.userId;
+    const search = req.body.search || "";
+
+    if (!userId) {
+        await renderAdminUsersPage(res, {
+            search,
+            error: "No user was selected for deletion"
+        });
+        return;
+    }
+
+    const deletedUser = await User.findOneAndDelete({
+        _id: userId,
+        usertype: "user"
+    });
+
+    if (!deletedUser) {
+        await renderAdminUsersPage(res, {
+            search,
+            error: "User not found or already deleted"
+        });
+        return;
+    }
+
+    await renderAdminUsersPage(res, {
+        search,
+        message: `User ${deletedUser.username} deleted successfully`
+    });
 };
