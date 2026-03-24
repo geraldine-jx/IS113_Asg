@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 // Home display
-const Pet = require("../models/Pet"); // adjust path if needed
+const Pet = require("../models/pet");
 
 router.get("/", async (req, res) => {
   try {
     const pets = await Pet.find();
     console.log(pets); // 👈 check this
-    res.render("home-display", { pets });
+    res.render("pet/home-display", { pets });
   } catch (err) {
     console.log(err);
     res.send(err.message);
