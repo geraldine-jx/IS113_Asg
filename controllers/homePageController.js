@@ -6,15 +6,21 @@ exports.getAllPets = async (req, res) => {
     try {
         const allPets = await Pet.find();
 
-        // Fetch current user to get favourites
+        // Get user's favourites
         const user = await User.findById(req.session.userId);
+        const favourites = user ? user.favourites.map(id => id.toString()) : [];
 
-        // Render page with pets + favourites
+        // Sort pets: favourites first
+        const sortedPets = [
+            ...allPets.filter(p => favourites.includes(p._id.toString())), // favourites
+            ...allPets.filter(p => !favourites.includes(p._id.toString())) // non-favourites
+        ];
+
+        // Render page
         res.render("pet/home-display", {
-            pets: allPets,
-            favourites: user ? user.favourites.map(id => id.toString()) : []
+            pets: sortedPets,
+            favourites
         });
-
     } catch (err) {
         console.error("Error loading pets:", err);
         res.send("Error loading pets");
