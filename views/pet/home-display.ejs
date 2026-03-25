@@ -27,7 +27,7 @@
             <button>User Profile</button>
         </a>
     </p>
-    
+    <p>Total pets: <%= pets.length %></p>
     <table border ="1"> 
         <% pets.forEach(pet => { %>
         <tr>
@@ -50,8 +50,11 @@
                 </a>
                 
                 <button type="details">More Info</button>
-                <span class="heart" onclick="toggleHeart(this)">🤍</span>
-                <br>
+                <form action="/home-display/pets/<%= pet._id %>/toggleFavourite" method="POST" style="display:inline;">
+                    <button type="submit" class="heart">
+                    <%= favourites.includes(pet._id.toString()) ? "❤️" : "🤍" %>
+                </button>
+</form>
             </td>
         </tr>
         <% }) %>
@@ -59,14 +62,24 @@
 </body>
 
 <script>
-    // later on can save the favorite in MongoDB & Load saved hearts when page loads
-    function toggleHeart(element){
+async function toggleHeart(element, petId) {
 
-    if(element.innerHTML === "🤍"){
-        element.innerHTML = "❤️"
-    }else{
-        element.innerHTML = "🤍"
-    }}
+    const isCurrentlyFav = element.innerHTML.trim() === "❤️";
+
+    try {
+        const res = await fetch(`/home-display/pets/${petId}/toggleFavourite`, {
+            method: "POST"
+        });
+
+        const data = await res.json();
+
+        // update UI AFTER backend confirms
+        element.innerHTML = data.favourited ? "❤️" : "🤍";
+
+    } catch (err) {
+        console.error("Error:", err);
+    }
+}
 </script>
 
 </html>
