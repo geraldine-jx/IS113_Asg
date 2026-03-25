@@ -2,14 +2,22 @@ const express = require("express");
 const router = express.Router();
 
 // Home display
-router.get("/", (req, res) => {
-    const pets = [
-        { name: "Max", breed: "Golden Retriever", age: 3, status: "Available" },
-        { name: "Luna", breed: "Husky", age: 2, status: "Available" }
-    ];
+const Pet = require("../models/pet");
 
-    res.render("home-display", { pets: pets });
+router.get("/", async (req, res) => {
+  try {
+    const pets = await Pet.find();
+    console.log(pets); // 👈 check this
+    res.render("pet/home-display", { pets });
+  } catch (err) {
+    console.log(err);
+    res.send(err.message);
+  }
 });
+
+
+
+// Eashvar or Matrix code (Admin side)
 
 // Temporary sample data for admin give-up submissions
 let giveUpSubmissions = [
@@ -73,5 +81,6 @@ router.get("/admin/giveups/:id", (req, res) => {
         <p><a href="/home-display/admin/giveups">Back</a></p>
     `);
 });
+
 
 module.exports = router;

@@ -6,8 +6,12 @@
 <body>
   <h1>User Registration</h1>
 
-    <form action="/auth/register-user-process" method="post">
-    Username:<br>
+  <% if (error) { %>
+    <div><%- error %></div>
+  <% } %>
+
+<form action="/auth/register-user-process" method="POST">
+     Username:<br>
     <input type="text" name="username">
     <br><br>
 
@@ -41,5 +45,11 @@
 
     <button type="submit">Register</button>
   </form>
+
+  <br>
+
+  <a href="/auth/login?usertype=user">
+    <button type="button">Back to Login</button>
+  </a>
 </body>
 </html>
