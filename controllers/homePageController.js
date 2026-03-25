@@ -84,17 +84,38 @@ exports.toggleFavourite = async (req, res) => {
 
     try {
         const user = await User.findById(userId);
-
+        // if pet already in favourites, remove
+        // if pet not in favourites, remove
         if (user.favourites.includes(petId)) {
             await User.findByIdAndUpdate(userId, { $pull: { favourites: petId } });
         } else {
             await User.findByIdAndUpdate(userId, { $addToSet: { favourites: petId } });
         }
 
-        // Redirect back to home page (page reloads)
+        // Redirect/reload back to home page
         res.redirect("/home-display");
     } catch (err) {
         console.error(err);
-        res.redirect("/home-display"); // fallback redirect on error
+        // show home page again if error
+        res.redirect("/home-display"); 
+    }
+};
+
+exports.getPetDetails = async (req, res) => {
+    try {
+        const petId = req.params.id;
+        //find pet
+        const pet = await Pet.findById(petId);
+        const user = await User.findById(req.session.userId);
+        const favourites = user ? user.favourites.map(id => id.toString()) : [];
+
+        if (!pet) {
+            return res.send("Pet not found");
+        }
+        
+        res.render("pet/pet-details", { pet,favourites });
+    } catch (err) {
+        console.error(err);
+        res.send("Error loading pet details");
     }
 };

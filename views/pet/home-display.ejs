@@ -49,37 +49,20 @@
                     <button>Adopt</button>
                 </a>
                 
-                <button type="details">More Info</button>
+                <!-- Lead to more info for specific dog -->
+                <a href="/home-display/pets/<%= pet._id %>">
+                     <button type="button">More Info</button>
+                </a>
+
+                <!-- favourites button -->
                 <form action="/home-display/pets/<%= pet._id %>/toggleFavourite" method="POST" style="display:inline;">
                     <button type="submit" class="heart">
                     <%= favourites.includes(pet._id.toString()) ? "❤️" : "🤍" %>
                 </button>
-</form>
+                </form>
             </td>
         </tr>
         <% }) %>
     </table>
 </body>
-
-<script>
-async function toggleHeart(element, petId) {
-
-    const isCurrentlyFav = element.innerHTML.trim() === "❤️";
-
-    try {
-        const res = await fetch(`/home-display/pets/${petId}/toggleFavourite`, {
-            method: "POST"
-        });
-
-        const data = await res.json();
-
-        // update UI AFTER backend confirms
-        element.innerHTML = data.favourited ? "❤️" : "🤍";
-
-    } catch (err) {
-        console.error("Error:", err);
-    }
-}
-</script>
-
 </html>

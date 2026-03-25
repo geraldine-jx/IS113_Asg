@@ -36,6 +36,7 @@ mongoose.connect(process.env.MONGODB_URI)
 server.use("/", authRoutes);
 server.use("/", formRoutes);
 server.use("/home-display", homeRoutes);
+
 // Start server
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
