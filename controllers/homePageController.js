@@ -84,7 +84,6 @@ exports.toggleFavourite = async (req, res) => {
 
     try {
         const user = await User.findById(userId);
-        if (!user) return res.redirect("/login"); // redirect to login if no user
 
         if (user.favourites.includes(petId)) {
             await User.findByIdAndUpdate(userId, { $pull: { favourites: petId } });
