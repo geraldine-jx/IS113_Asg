@@ -36,21 +36,6 @@ exports.getAllPets = async (req, res) => {
   }
 };
 
-// Create a favourites data
-exports.addFavourite = async (req, res) => {
-  try {
-    await Favourite.create({
-      user: req.user._id,
-      pet: req.params.petId
-    });
-
-    res.redirect("/home-display");
-  } catch (err) {
-    console.log(err);
-    res.send("Already favourited or error");
-  }
-};
-
 // toggle for favourite pet
 exports.toggleFavourite = async (req, res) => {
   try {

@@ -1,5 +1,5 @@
 const path = require("path");
-const User = require("../models/User");
+const User = require("../models/user");
 
 const getDuplicateFieldError = (error) => {
     if (error?.code !== 11000 || !error.keyPattern) {
