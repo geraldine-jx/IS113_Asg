@@ -115,5 +115,5 @@ router.post("/admin.giveups/:id/delete", authMiddleware.requireAdmin, async(req,
         res.status(500).send("Unable to delete submission")
     }
 });
-
+// End of Eashvar's code (Admin give-up side)
 module.exports = router;
