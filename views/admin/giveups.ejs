@@ -52,23 +52,26 @@
           <td><%= submission.status %></td>
           <td>
             <% if (submission.status === "pending") { %>
-              <form action="/home-display/admin/giveups/<%= submission._id %>/approve" method="POST">
+              <form action="/home-display/admin/giveups/approve" method="POST">
+                <input type="hidden" name="id" value="<%= submission._id %>">
                 <button type="submit">Approve</button>
               </form>
 
-              <form action="/home-display/admin/giveups/<%= submission._id %>/reject" method="POST">
+              <form action="/home-display/admin/giveups/reject" method="POST">
+                <input type="hidden" name="id" value="<%= submission._id %>">
                 <button type="submit">Reject</button>
               </form>
             <% } else { %>
               -
             <% } %>
 
-            <form action="/home-display/admin/giveups/<%= submission._id %>/delete" method="POST" onsubmit="return confirm('Delete this give-up request?');">
+            <form action="/home-display/admin/giveups/delete" method="POST" onsubmit="return confirm('Delete this give-up request?');">
+              <input type="hidden" name="id" value="<%= submission._id %>">
               <button type="submit">Delete</button>
             </form>
           </td>
           <td>
-            <a href="/home-display/admin/giveups/<%= submission._id %>">View</a>
+            <a href="/home-display/admin/giveups/details?id=<%= submission._id %>">View</a>
           </td>
         </tr>
       <% }) %>
