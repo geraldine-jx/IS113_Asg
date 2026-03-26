@@ -1,6 +1,16 @@
 require("dotenv").config();
 
 const express = require("express");
+
+const path = require("path");
+const mongoose = require("mongoose");
+const session = require("express-session");
+
+const authRoutes = require("./routes/authRoutes");
+const homeRoutes = require("./routes/homeRoutes");
+const formRoutes = require("./routes/formPage");
+const appointmentRoutes = require("./routes/appointmentRoutes");
+
 const path = require("path");
 const mongoose = require("mongoose");
 const session = require("express-session");
@@ -36,8 +46,8 @@ mongoose.connect(process.env.MONGODB_URI)
 server.use("/", authRoutes);
 server.use("/", formRoutes);
 server.use("/home-display", homeRoutes);
+server.use("/", appointmentRoutes);
 
-// Start server
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });

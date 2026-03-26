@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>List of Appointments</title>
+    </head>
+    <body>
+        <% if (success) { %>
+            <p><%= success %></p>
+        < % } %>
+        <% if (appointmentList.length === 0) { %>
+            <p>No appointment yet.</p>
+        <% } else { %>
+            <% appointmentList.forEach(a => { %>
+                <p><strong>Name: <%= a.name %></strong></p>
+                Contact: <%= a.contact %><br>
+                Date: <%= a.date %><br>
+                Time: <%= a.time %><br><br>
+
+                <form action="/update-appointment" method="post">
+                    <input type="hidden" name="contact" value="<%= a.contact %>">
+                    Updated Date: <input type="text" name="updatedDate">
+                    Updated Time: <input type="text" name="UpdatedTime">
+                    <button type="submit">Update</button>
+                </form>
+
+                <form action="/delete-appointment" method="post">
+                    <input type="hidden" name="contact" value="<%= a.contact %>">
+                    <button type="submit">Delete</button>
+                </form>
+
+                <hr>
+            <% }) %>
+        <% } %>
+    </body>
+</html>
