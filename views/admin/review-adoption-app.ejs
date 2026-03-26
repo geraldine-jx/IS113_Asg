@@ -1,0 +1,60 @@
+<!-- views/admin/applications.ejs -->
+<h1>Adoption Applications</h1>
+
+<!-- Success / error messages -->
+<% if (success) { %>
+  <p><%= success %></p>
+<% } %>
+<% if (error) { %>
+  <p><%= error %></p>
+<% } %>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>Dog</th>
+      <th>Applicant</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% applications.forEach(({ dog, applicants }) => { %>
+      <% applicants.forEach((app, index) => { %>
+        <tr>
+          <!-- Only show dog name on first row for that dog -->
+          <% if (index === 0) { %>
+            <td rowspan="<%= applicants.length %>"><%= dog.name %></td>
+          <% } %>
+
+          <td><%= app.applicantName %></td>
+
+          <td>
+            <% if (app.status === "approved") { %>
+              Approved
+            <% } else if (app.status === "rejected") { %>
+              Rejected
+            <% } else { %>
+              Pending
+            <% } %>
+          </td>
+
+          <td>
+            <!-- Only show buttons if pending and dog not yet adopted -->
+            <% if (app.status === "pending" && dog.status !== "adopted") { %>
+              <form action="/admin/applications/<%= app.id %>/approve" method="POST" style="display:inline">
+                <button type="submit">Approve</button>
+              </form>
+              <form action="/admin/applications/<%= app.id %>/reject" method="POST" style="display:inline">
+                <button type="submit">Reject</button>
+              </form>
+            <% } else if (dog.status === "adopted" && app.status !== "approved") { %>
+              <!-- Dog already adopted, hide buttons for other applicants -->
+              <span>—</span>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    <% }) %>
+  </tbody>
+</table>

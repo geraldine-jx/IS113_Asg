@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Home</title>
+  <style>
+    .heart{
+    font-size: 22px;
+    padding: 5px;
+}
+    .heart:hover{
+    background-color: lightgray;
+    }
+</style>
+</head>
+
+<body>
+    <h1>Get your Best Buddy Now!</h1>
+    <p>
+        <!-- Lead to give up page -->
+       <a href="/give-up-dog">
+            <button>Rehome</button>
+        </a>
+
+        <!-- Lead to profile page -->
+        <a href="/profile">
+            <button>User Profile</button>
+        </a>
+    </p>
+    <p>Total pets: <%= pets.length %></p>
+    <table border ="1"> 
+        <% pets.forEach(pet => { %>
+        <tr>
+            <td>
+                <!-- Display image -->
+                <img src="<%= pet.image %>" alt="<%= pet.name %>" width="200" height="200">
+            </td>
+            <td>
+                <!-- Display information -->
+                Name: <%= pet.name %> <br>
+                Breed: <%= pet.breed %> <br>
+                Age: <%= pet.age %> <br>
+                Status: <%= pet.status %><br>
+                <br>
+
+                <!-- Buttons -->
+                <!-- Lead to adoption page -->
+                <a href="/adopt-dog">
+                    <button>Adopt</button>
+                </a>
+                
+                <!-- Lead to more info for specific dog -->
+                <a href="/home-display/pets/<%= pet._id %>">
+                     <button type="button">More Info</button>
+                </a>
+
+                <!-- favourites button -->
+                <form action="/home-display/pets/<%= pet._id %>/toggleFavourite" method="POST" style="display:inline;">
+                    <button type="submit" class="heart">
+                    <%= favourites.includes(pet._id.toString()) ? "❤️" : "🤍" %>
+                </button>
+                </form>
+            </td>
+        </tr>
+        <% }) %>
+    </table>
+</body>
+</html>
