@@ -1,106 +1,66 @@
 const Pet = require("../models/pet.js");
+const Favourite = require("../models/favourite");
 const User = require("../models/user");
 
-// Get all pets for home page
 exports.getAllPets = async (req, res) => {
-    try {
-        const allPets = await Pet.find();
+  try {
+    
+    let favouritePetIds = [];
+    let userId = req.session.userId; 
 
-        // Get user's favourites
-        const user = await User.findById(req.session.userId);
-        const favourites = user ? user.favourites.map(id => id.toString()) : [];
-
-        // Sort pets: favourites first
-        const sortedPets = [
-            ...allPets.filter(p => favourites.includes(p._id.toString())), // favourites
-            ...allPets.filter(p => !favourites.includes(p._id.toString())) // non-favourites
-        ];
-
-        // Render page
-        res.render("pet/home-display", {
-            pets: sortedPets,
-            favourites
-        });
-    } catch (err) {
-        console.error("Error loading pets:", err);
-        res.send("Error loading pets");
+    if (userId) {
+      // Get favourites for logged-in user
+      const favourites = await Favourite.find({ user: userId });
+      favouritePetIds = favourites.map(f => f.pet.toString());
     }
+
+    // Get all pets
+    const pets = await Pet.find();
+
+    // If user has favourites, put favourite first that remaining pets
+    const sortedPets = favouritePetIds.length
+      ? [
+          ...pets.filter(p => favouritePetIds.includes(p._id.toString())), // favourites first
+          ...pets.filter(p => !favouritePetIds.includes(p._id.toString())) // remaining pets
+        ]
+      : pets; // no favourites → just all pets
+
+    res.render("pet/home-display", {
+      pets: sortedPets,
+      favourites: favouritePetIds
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.send("Error loading pets");
+  }
 };
 
-// Temporary route to add test pets
-exports.createPet = async (req, res) => {
-    console.log("createPet route hit");
-    try {
-        await Pet.insertMany([
-            {
-                name: "Milo",
-                breed: "Shih Tzu",
-                size: "Small",
-                gender: "Male",
-                age: 3,
-                hdbApproved: "Yes",
-                description: "Friendly and playful dog",
-                image: "/images/milo.jpg",
-                status: "available",
-                listingType: "adoption"
-            },
-            {
-                name: "Bella",
-                breed: "Golden Retriever",
-                size: "Large",
-                gender: "Female",
-                age: 2,
-                hdbApproved: "Yes",
-                description: "Loves kids and outdoor play",
-                image: "/images/bella.jpg",
-                status: "available",
-                listingType: "adoption"
-            },
-            {
-                name: "Charlie",
-                breed: "Beagle",
-                size: "Medium",
-                gender: "Male",
-                age: 4,
-                hdbApproved: "No",
-                description: "Very active and curious",
-                image: "/images/charlie.jpg",
-                status: "available",
-                listingType: "rehome"
-            }
-        ]);
-
-        res.send("Multiple pets added successfully!");
-    } catch (err) {
-        console.error(err);
-        res.send("Error adding pets");
-    }
-};
-
-// Toggle favourite for a pet
+// toggle for favourite pet
 exports.toggleFavourite = async (req, res) => {
+  try {
+    if (!req.session.userId) return res.redirect("/login");
+
     const userId = req.session.userId;
     const petId = req.params.id;
 
-    try {
-        const user = await User.findById(userId);
-        // if pet already in favourites, remove
-        // if pet not in favourites, remove
-        if (user.favourites.includes(petId)) {
-            await User.findByIdAndUpdate(userId, { $pull: { favourites: petId } });
-        } else {
-            await User.findByIdAndUpdate(userId, { $addToSet: { favourites: petId } });
-        }
-
-        // Redirect/reload back to home page
-        res.redirect("/home-display");
-    } catch (err) {
-        console.error(err);
-        // show home page again if error
-        res.redirect("/home-display"); 
+    const favourite = await Favourite.findOne({ user: userId, pet: petId });
+    // Delete a favourites data
+    if (favourite) {
+      await favourite.deleteOne();
+    } else {
+    // Create a favourites data
+      await Favourite.create({ user: userId, pet: petId });
     }
+
+    res.redirect("/home-display");
+  } catch (err) {
+    console.error(err);
+    res.send("Error toggling favourite");
+  }
 };
 
+// Get details for more info page
 exports.getPetDetails = async (req, res) => {
     try {
         const petId = req.params.id;

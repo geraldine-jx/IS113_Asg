@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const path = require("path");
 const User = require("../models/user");
+
 const Employee = require("../models/employees");
 exports.loginUser = async (req, res) => {
     const username = req.body.username;
@@ -32,7 +33,6 @@ exports.loginUser = async (req, res) => {
     req.session.usertype = foundUser.usertype;
     res.redirect("/home-display");
 };
-
 
 const getDuplicateFieldError = (error) => {
     if (error?.code !== 11000 || !error.keyPattern) {
