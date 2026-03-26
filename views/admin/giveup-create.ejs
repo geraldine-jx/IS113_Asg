@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Give-up Request</title>
+</head>
+<body>
+  <h1>Create Give-up Request</h1>
+
+  <% if (error) { %>
+    <p><%- error %></p>
+  <% } %>
+
+  <form action="/home-display/admin/giveups/create" method="POST">
+    Owner Name:
+    <input type="text" name="ownerName" value="<%= formData.ownerName %>">
+    <br><br>
+
+    Pet Name:
+    <input type="text" name="petName" value="<%= formData.petName %>">
+    <br><br>
+
+    Pet Breed:
+    <input type="text" name="petBreed" value="<%= formData.petBreed %>">
+    <br><br>
+
+    Pet Age:
+    <input type="number" min="0" name="petAge" value="<%= formData.petAge %>">
+    <br><br>
+
+    Pet Size:
+    <input type="text" name="petSize" value="<%= formData.petSize %>">
+    <br><br>
+
+    HDB Approved:
+    <select name="petHdbApproved">
+      <option value="No" <%= formData.petHdbApproved === "No" ? "selected" : "" %>>No</option>
+      <option value="Yes" <%= formData.petHdbApproved === "Yes" ? "selected" : "" %>>Yes</option>
+    </select>
+    <br><br>
+
+    Photo URL:
+    <input type="text" name="photo" value="<%= formData.photo %>">
+    <br><br>
+
+    Contact:
+    <input type="text" name="contact" value="<%= formData.contact %>">
+    <br><br>
+
+    Address:
+    <input type="text" name="address" value="<%= formData.address %>">
+    <br><br>
+
+    Details:
+    <br>
+    <textarea name="details" rows="5" cols="40"><%= formData.details %></textarea>
+    <br><br>
+
+    <button type="submit">Create Request</button>
+  </form>
+
+  <br>
+
+  <a href="/home-display/admin/giveups">
+    <button type="button">Back to Give-up List</button>
+  </a>
+</body>
+</html>
