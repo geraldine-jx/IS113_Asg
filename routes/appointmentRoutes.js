@@ -1,6 +1,6 @@
 const express = require('express');
 // path to controller
-const appointmentController = require('../controllers/appointment-controller');
+const appointmentController = require('../controllers/appointmentController');
 // sub application
 const router = express.Router();
 

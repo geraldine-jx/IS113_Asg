@@ -11,14 +11,6 @@ const homeRoutes = require("./routes/homeRoutes");
 const formRoutes = require("./routes/formPage");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 
-const path = require("path");
-const mongoose = require("mongoose");
-const session = require("express-session");
-
-const authRoutes = require("./routes/authRoutes");
-const homeRoutes = require("./routes/homeRoutes");
-const formRoutes = require("./routes/formPage");
-
 const server = express();
 const hostname = "127.0.0.1";
 const port = 8000;
