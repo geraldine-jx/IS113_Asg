@@ -13,7 +13,7 @@ router.post("/pets/:id/toggleFavourite", homePageController.toggleFavourite);
 // Get more info for a pet (full URL: /home-display/pets/:id)
 router.get("/pets/:id",homePageController.getPetDetails)
 
-// Admin give-up routes
+// Admin give-up routes(Eashvar)
 router.get("/admin/giveups", authMiddleware.requireAdmin, adminController.showGiveUps);
 router.get("/admin/giveups/details", authMiddleware.requireAdmin, adminController.showGiveUpDetails);
 router.post("/admin/giveups/approve", authMiddleware.requireAdmin, adminController.approveGiveUp);
@@ -21,3 +21,4 @@ router.post("/admin/giveups/reject", authMiddleware.requireAdmin, adminControlle
 router.post("/admin/giveups/delete", authMiddleware.requireAdmin, adminController.deleteGiveUp);
 
 module.exports = router;
+ 
