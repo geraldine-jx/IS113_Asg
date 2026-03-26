@@ -89,7 +89,7 @@ const renderAdminUsersPage = async (res, options = {}) => {
 };
 
 exports.showMainPage = (req, res) => {
-    res.sendFile(path.join(__dirname, "../views/pet/mainpage.html"));
+    res.sendFile(path.join(__dirname, "../views/user/mainpage.html"));
 };
 
 exports.showLoginPage = (req, res) => {
