@@ -15,14 +15,14 @@
                 Date: <%= a.date %><br>
                 Time: <%= a.time %><br><br>
 
-                <form action="/update-appointment" method="post">
+                <form action="/updateappointment" method="post">
                     <input type="hidden" name="contact" value="<%= a.contact %>">
                     Updated Date: <input type="text" name="updatedDate">
                     Updated Time: <input type="text" name="UpdatedTime">
                     <button type="submit">Update</button>
                 </form>
 
-                <form action="/delete-appointment" method="post">
+                <form action="/deleteappointment" method="post">
                     <input type="hidden" name="contact" value="<%= a.contact %>">
                     <button type="submit">Delete</button>
                 </form>

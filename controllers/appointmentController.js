@@ -101,32 +101,103 @@ exports.showAppointments = async (req, res) => {
     }
     };
 
+exports.showAppointments = async (req, res) => {
+    try {
+        let appointmentList = await Appointment.retrieveAll();
+        console.log(appointmentList);
+        res.render("appointment/display-appointment", { 
+            appointmentList,
+            success: ''
+        });
+    } catch (error) {
+        console.log(error);
+        res.send("Error reading database");
+    }
+};
+
 exports.updateAppointment = async (req, res) => {
     const contactNo = req.body.contact;
     const newDate = req.body.date;
     const newTime = req.body.time;
+    const time = Object.values(times);
+
+    let message = [];
+    let success = "";
+
+    if (!contactNo) {
+        message.push("Please input a contact number.");
+    }
+
+    if (!newDate) {
+        message.push("Please input a new date.");
+    }
+
+    if (!newTime) {
+        message.push("Please select a new time.");
+    }
+
+    if (message.length > 0) {
+        return res.render("appointment/manage-appointment", {
+            time,
+            message,
+            success
+        });
+    }
+
     try {
-        let success = await Appointment.updateAppointment (contactNo, newDate, newTime);
-        console.log(success);
-        res.send("Appointment has been successfully updated.")
+        let result = await Appointment.editAppointment(contactNo, newDate, newTime);
+        console.log(result);
+
+        if (result.modifiedCount === 1) {
+            success = "Appointment has been successfully updated.";
+        } else {
+            success = "Appointment not found or no changes were made.";
+        }
+
+        res.render("appointment/manage-appointment", {
+            time,
+            message: [],
+            success
+        });
     } catch (error) {
         console.error(error);
-        res.send("Error updating appointment")
+        res.send("Error updating appointment");
     }
 };
 
 exports.deleteAnAppointment = async (req, res) => {
     const contactNo = req.body.contact;
+    const time = Object.values(times);
+
+    let message = [];
+    let success = "";
+
+    if (!contactNo) {
+        message.push("Please input a contact number.");
+        return res.render("appointment/manage-appointment", {
+            time,
+            message,
+            success
+        });
+    }
+
     try {
-        let success = await Appointment.deleteAppointment(contactNo);
-        console.log(success) 
-        if (success.deletedCount === 1) {
-            res.send("Appointment has been successfully deleted")
+        let result = await Appointment.deleteAppointment(contactNo);
+        console.log(result);
+
+        if (result.deletedCount === 1) {
+            success = "Appointment has been successfully deleted.";
         } else {
-            res.send("Appointment not found")
+            success = "Appointment not found";
         }
+
+        res.render("appointment/manage-appointment", {
+            time,
+            message: [],
+            success
+        });
     } catch (error) {
-        console.error(error)
+        console.error(error);
         res.send("Error deleting appointment");
     }
 };

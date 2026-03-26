@@ -4,11 +4,12 @@ const appointmentController = require('../controllers/appointment-controller');
 // sub application
 const router = express.Router();
 
-router.get("/", appointmentController.displayForm);
+router.get("/appointment", appointmentController.displayForm);
+router.get("/manageappointment", appointmentController.showManageAppointment);
 router.post("/process-form", appointmentController.createAppointment);
-router.get("/appointment-list", appointmentController.showAppointments);
-router.post("/update-appointment", appointmentController.updateAppointment);
-router.post("/delete-appointment", appointmentController.deleteAnAppointment);
+router.get("/appointmentlist", appointmentController.showAppointments);
+router.post("/updateappointment", appointmentController.updateAppointment);
+router.post("/deleteappointment", appointmentController.deleteAnAppointment);
 // export
 module.exports = router;
 //finds list books will be forwarded to books-controller.js
