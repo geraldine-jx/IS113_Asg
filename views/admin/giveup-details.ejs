@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Give-up Request Details</title>
+</head>
+<body>
+  <h1>Give-up Request Details</h1>
+
+  <p><strong>Submission ID:</strong> <%= submission._id %></p>
+  <p><strong>Status:</strong> <%= submission.status %></p>
+  <p><strong>Dog Name:</strong> <%= submission.petName || "-" %></p>
+  <p><strong>Breed:</strong> <%= submission.petBreed || "-" %></p>
+  <p><strong>Size:</strong> <%= submission.petSize || "-" %></p>
+  <p><strong>Age:</strong> <%= submission.petAge ?? "-" %></p>
+  <p><strong>HDB Approved:</strong> <%= submission.petHdbApproved || "-" %></p>
+  <p><strong>Contact:</strong> <%= submission.contact %></p>
+  <p><strong>Address:</strong> <%= submission.address %></p>
+  <p><strong>Description:</strong> <%= submission.details || "-" %></p>
+  <p><strong>Owner Username:</strong> <%= submission.userId?.username || "-" %></p>
+  <p><strong>Owner Display Name:</strong> <%= submission.userId?.displayName || "-" %></p>
+  <p><strong>Owner Email:</strong> <%= submission.userId?.email || "-" %></p>
+  <p><strong>Reviewed By:</strong> <%= submission.approvedBy?.displayName || submission.approvedBy?.username || "-" %></p>
+
+  <% if (submission.photo) { %>
+    <p><img src="<%= submission.photo %>" alt="Pet photo" width="220"></p>
+  <% } %>
+
+  <a href="/home-display/admin/giveups">
+    <button type="button">Back to Give-up List</button>
+  </a>
+</body>
+</html>
