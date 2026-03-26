@@ -10,6 +10,9 @@ const petRequestSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Pet"
     },
+    ownerName: {
+        type: String
+    },
     requestType: {
         type: String,
         enum: ["adopt", "rehome"],

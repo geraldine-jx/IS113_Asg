@@ -36,7 +36,7 @@ exports.getAllPets = async (req, res) => {
   }
 };
 
-// toggle for favourite pet
+// Toggle for favourite pet
 exports.toggleFavourite = async (req, res) => {
   try {
     if (!req.session.userId) return res.redirect("/login");
@@ -47,7 +47,7 @@ exports.toggleFavourite = async (req, res) => {
     const favourite = await Favourite.findOne({ user: userId, pet: petId });
     // Delete a favourites data
     if (favourite) {
-      await favourite.deleteOne();
+      await Favourite.findByIdAndDelete(favourite._id);
     } else {
     // Create a favourites data
       await Favourite.create({ user: userId, pet: petId });

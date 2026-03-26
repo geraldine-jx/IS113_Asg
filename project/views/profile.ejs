@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+</head>
+<body>
+
+    <h2>User Profile</h2>
+
+    <form action="/profile" method="POST">
+        <label for="username">Username:</label>
+        <br>
+        <input type="text" id="username" name="username" value="<%= user.username %>">
+        <br><br>
+
+        <label for="email">Email:</label>
+        <br>
+        <input type="text" id="email" name="email" value="<%= user.email %>" readonly>
+        <br><br>
+
+        <label for="bio">Bio:</label>
+        <br>
+        <textarea id="bio" name="bio"><%= user.bio %></textarea>
+        <br><br>
+
+        <label for="contact">Contact Number +65:</label>
+        <br>
+        <input type="text" id="contact" name="contact" value="<%= user.contact %>">
+        <br><br>
+
+        <label for="address">Address:</label>
+        <br>
+        <input type="text" id="address" name="address" value="<%= user.address %>">
+        <br><br>
+
+        <label for="dateJoined">Date Joined:</label>
+        <br>
+        <input type="text" id="dateJoined" value="<%= user.dateJoined %>" readonly>
+        <br><br>
+
+        <button type="submit">Update Profile</button>
+    </form>
+
+    <br>
+
+    <% if (errors && errors.length > 0) { %>
+        <div style="color:red;">
+            <ul>
+                <% errors.forEach(function(e) { %>
+                    <li><%= e %></li>
+                <% }); %>
+            </ul>
+        </div>
+    <% } %>
+
+    <% if (success) { %>
+        <div style="color:green;">
+            <p><%= success %></p>
+        </div>
+    <% } %>
+
+    
+    <br><br>
+
+    <form action="/delete-account" method="POST" onsubmit="return confirm('Are you sure you want to delete your account?');">
+        <button type="submit">Delete Account</button>
+    </form>
+
+</body>
+</html>
