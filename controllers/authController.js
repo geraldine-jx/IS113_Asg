@@ -350,22 +350,20 @@ exports.registerAdmin = async (req, res) => {
 
 exports.loginAdmin = async (req, res) => {
     const employeeID = req.body.employeeID;
-    const username = req.body.username;
     const password = req.body.password;
 
-    if (employeeID === "" || username === "" || password === "") {
+    if (employeeID === "" || password === "") {
         res.render("user/login-admin", { error: "Please fill in all required fields." });
         return;
     }
 
     const foundAdmin = await User.findOne({
         usertype: "admin",
-        employeeID: employeeID,
-        username: username
+        employeeID: employeeID
     });
 
     if (!foundAdmin) {
-        res.render("user/login-admin", { error: "User does not exist" });
+        res.render("user/login-admin", { error: "Admin account does not exist" });
         return;
     }
 
