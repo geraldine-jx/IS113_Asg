@@ -1,7 +1,7 @@
 const fs = require('fs/promises');
 
 // get service model 
-const Appointment = require('./../models/appointment-model');
+const Appointment = require('./../models/appointment');
 // appointment is an object
 
 const times = {
