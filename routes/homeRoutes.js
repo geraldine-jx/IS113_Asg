@@ -14,6 +14,8 @@ router.post("/pets/:id/toggleFavourite", homePageController.toggleFavourite);
 router.get("/pets/:id",homePageController.getPetDetails)
 
 // Admin give-up routes(Eashvar)
+router.get("/admin/giveups/create", authMiddleware.requireAdmin, adminController.showCreateGiveUpForm);
+router.post("/admin/giveups/create", authMiddleware.requireAdmin, adminController.createGiveUp);
 router.get("/admin/giveups", authMiddleware.requireAdmin, adminController.showGiveUps);
 router.get("/admin/giveups/details", authMiddleware.requireAdmin, adminController.showGiveUpDetails);
 router.post("/admin/giveups/approve", authMiddleware.requireAdmin, adminController.approveGiveUp);
