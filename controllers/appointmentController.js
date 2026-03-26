@@ -30,7 +30,7 @@ exports.displayForm = (req, res) => {
 
 exports.createAppointment = async (req, res) => {
     const name = req.body.name;
-    const contact = req.body.contact.replaceAll(" ", "");
+    const contact = req.body.contact ? req.body.contact.replaceAll(" ", "") : "";
     const date = req.body.date;
     const time = Object.values(times);
     const selectedTime = req.body.time;
@@ -94,12 +94,15 @@ exports.showAppointments = async (req, res) => {
     try {
         let appointmentList = await Appointment.retrieveAll();
         console.log(appointmentList);
-        res.render("display-appointment", { appointmentList });
+        res.render("appointment/display-appointment", {
+            appointmentList,
+            success: ''
+        });
     } catch (error) {
         console.log(error);
         res.send("Error reading database");
     }
-    };
+};
 
 exports.showAppointments = async (req, res) => {
     try {
@@ -113,6 +116,16 @@ exports.showAppointments = async (req, res) => {
         console.log(error);
         res.send("Error reading database");
     }
+};
+
+exports.showManageAppointment = (req, res) => {
+    const time = Object.values(times);
+
+    res.render("appointment/manage-appointment", {
+        time,
+        message: [],
+        success: ''
+    });
 };
 
 exports.updateAppointment = async (req, res) => {

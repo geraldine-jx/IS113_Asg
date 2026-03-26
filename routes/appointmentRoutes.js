@@ -1,16 +1,14 @@
 const express = require('express');
-// path to controller
 const appointmentController = require('../controllers/appointmentController');
-// sub application
 const router = express.Router();
 
 router.get("/appointment", appointmentController.displayForm);
-router.get("/manageappointment", appointmentController.showManageAppointment);
+router.get("/manage-appointment", appointmentController.showManageAppointment);
 router.post("/process-form", appointmentController.createAppointment);
-router.get("/appointmentlist", appointmentController.showAppointments);
-router.post("/updateappointment", appointmentController.updateAppointment);
-router.post("/deleteappointment", appointmentController.deleteAnAppointment);
-// export
+router.get("/appointment-list", appointmentController.showAppointments);
+router.post("/update-appointment", appointmentController.updateAppointment);
+router.post("/delete-appointment", appointmentController.deleteAnAppointment);
+
 module.exports = router;
 //finds list books will be forwarded to books-controller.js
 // then punch req to book-model.js
