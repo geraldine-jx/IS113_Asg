@@ -94,7 +94,7 @@ exports.showAppointments = async (req, res) => {
     try {
         let appointmentList = await Appointment.retrieveAll();
         console.log(appointmentList);
-        res.render("appointment/display-appointment", {
+        res.render("appointment/displayappointment", {
             appointmentList,
             success: ''
         });
@@ -108,7 +108,7 @@ exports.showAppointments = async (req, res) => {
     try {
         let appointmentList = await Appointment.retrieveAll();
         console.log(appointmentList);
-        res.render("appointment/display-appointment", { 
+        res.render("appointment/displayappointment", { 
             appointmentList,
             success: ''
         });
@@ -121,7 +121,7 @@ exports.showAppointments = async (req, res) => {
 exports.showManageAppointment = (req, res) => {
     const time = Object.values(times);
 
-    res.render("appointment/manage-appointment", {
+    res.render("appointment/manageappointment", {
         time,
         message: [],
         success: ''
@@ -150,7 +150,7 @@ exports.updateAppointment = async (req, res) => {
     }
 
     if (message.length > 0) {
-        return res.render("appointment/manage-appointment", {
+        return res.render("appointment/manageappointment", {
             time,
             message,
             success
@@ -167,7 +167,7 @@ exports.updateAppointment = async (req, res) => {
             success = "Appointment not found or no changes were made.";
         }
 
-        res.render("appointment/manage-appointment", {
+        res.render("appointment/manageappointment", {
             time,
             message: [],
             success
@@ -187,7 +187,7 @@ exports.deleteAnAppointment = async (req, res) => {
 
     if (!contactNo) {
         message.push("Please input a contact number.");
-        return res.render("appointment/manage-appointment", {
+        return res.render("appointment/manageappointment", {
             time,
             message,
             success
@@ -204,7 +204,7 @@ exports.deleteAnAppointment = async (req, res) => {
             success = "Appointment not found";
         }
 
-        res.render("appointment/manage-appointment", {
+        res.render("appointment/manageappointment", {
             time,
             message: [],
             success
