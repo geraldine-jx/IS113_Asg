@@ -10,41 +10,17 @@
     <div><%- error %></div>
   <% } %>
 
-  <form action="/auth/register-admin-process" method="post">
+<form action="/auth/register-admin-process" method="POST">
     Employee ID:<br>
-    <input type="text" name="employeeID">
-    <br><br>
-
-    Username:<br>
-    <input type="text" name="username">
-    <br><br>
-
-    Email:<br>
-    <input type="email" name="email">
+    <input type="text" name="employeeID" required>
     <br><br>
 
     Password:<br>
-    <input type="password" name="password">
+    <input type="password" name="password" required>
     <br><br>
 
     Confirm Password:<br>
-    <input type="password" name="confirmPassword">
-    <br><br>
-
-    Display Name:<br>
-    <input type="text" name="displayName">
-    <br><br>
-
-    Contact:<br>
-    <input type="text" name="contact">
-    <br><br>
-
-    Address:<br>
-    <input type="text" name="address">
-    <br><br>
-
-    Bio:<br>
-    <textarea name="bio"></textarea>
+    <input type="password" name="confirmPassword" required>
     <br><br>
 
     <button type="submit">Register</button>

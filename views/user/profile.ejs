@@ -1,0 +1,98 @@
+<h2>User Profile</h2>
+
+
+
+<form action="/profile/update" method="POST">
+  Username:
+  <br>
+  <input type="text" name="username" value="<%= user.username %>" readonly>
+  <br><br>
+
+  Email:
+  <br>
+  <input type="text" name="email" value="<%= user.email %>" readonly>
+  <br><br>
+
+  Display Name:
+  <br>
+  <input type="text" name="displayName" value="<%= user.displayName || '' %>" required>
+  <br><br>
+
+  Bio:
+  <br>
+  <textarea name="bio"><%= user.bio || '' %></textarea>
+  <br><br>
+
+  Contact Number +65:
+  <br>
+  <input type="text" name="contact" value="<%= user.contact || '' %>" required>
+  <br><br>
+
+  Address:
+  <br>
+  <input type="text" name="address" value="<%= user.address || '' %>" required>
+  <br><br>
+
+  Date Joined:
+  <br>
+  <input type="text" value="<%= user.dateJoined ? new Date(user.dateJoined).toLocaleDateString('en-GB') : '' %>" readonly>
+  <br><br>
+
+  <button type="submit">Update Profile</button>
+</form>
+
+<br><hr><br>
+
+<% if (error) { %>
+  <div><%- error %></div>
+  <br>
+<% } %>
+
+<% if (message) { %>
+  <div><%= message %></div>
+  <br>
+<% } %>
+
+<h3>Change Password</h3>
+<form action="/profile/change-password" method="POST">
+  Current Password:
+  <br>
+  <input type="password" name="currentPassword" required>
+  <br><br>
+
+  New Password:
+  <br>
+  <input type="password" name="newPassword" required>
+  <br><br>
+
+  Confirm New Password:
+  <br>
+  <input type="password" name="confirmNewPassword" required>
+  <br><br>
+
+  <button type="submit">Change Password</button>
+</form>
+
+<br><hr><br>
+
+<h3>Delete Account</h3>
+<form action="/profile/delete" method="POST">
+  Enter Current Password to Confirm:
+  <br>
+  <input type="password" name="currentPassword" required>
+  <br><br>
+
+  <button type="submit" onclick="return confirm('Are you sure you want to delete your account?')">
+    Delete Account
+  </button>
+</form>
+
+<br><br>
+
+<a href="/home-display">
+  <button type="button">Back to Home Page</button>
+</a>
+
+<a href="/auth/logout">
+  <button type="button">Logout</button>
+</a>

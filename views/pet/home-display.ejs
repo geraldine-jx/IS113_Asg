@@ -23,17 +23,17 @@
         </a>
 
         <!-- Lead to profile page -->
-        <a href="/profile/update">
-            <button>Profile</button>
+        <a href="/profile">
+            <button>User Profile</button>
         </a>
     </p>
-    
+    <p>Total pets: <%= pets.length %></p>
     <table border ="1"> 
         <% pets.forEach(pet => { %>
         <tr>
             <td>
                 <!-- Display image -->
-                <img src="<%= pet.image %>" alt="<%= pet.name %>" width="100">
+                <img src="<%= pet.image %>" alt="<%= pet.name %>" width="200" height="200">
             </td>
             <td>
                 <!-- Display information -->
@@ -49,24 +49,20 @@
                     <button>Adopt</button>
                 </a>
                 
-                <button type="details">More Info</button>
-                <span class="heart" onclick="toggleHeart(this)">🤍</span>
-                <br>
+                <!-- Lead to more info for specific dog -->
+                <a href="/home-display/pets/<%= pet._id %>">
+                     <button type="button">More Info</button>
+                </a>
+
+                <!-- favourites button -->
+                <form action="/home-display/pets/<%= pet._id %>/toggleFavourite" method="POST" style="display:inline;">
+                    <button type="submit" class="heart">
+                    <%= favourites.includes(pet._id.toString()) ? "❤️" : "🤍" %>
+                </button>
+                </form>
             </td>
         </tr>
         <% }) %>
     </table>
 </body>
-
-<script>
-    // later on can save the favorite in MongoDB & Load saved hearts when page loads
-    function toggleHeart(element){
-
-    if(element.innerHTML === "🤍"){
-        element.innerHTML = "❤️"
-    }else{
-        element.innerHTML = "🤍"
-    }}
-</script>
-
 </html>
