@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Details</title>
+    <style>
+    .heart{
+    font-size: 22px;
+    padding: 5px;
+}
+    .heart:hover{
+    background-color: lightgray;
+    }
+</style>
+</head>
+<body>
+    <h1>Get to know <%= pet.name %>!</h1><br>
+   
+    <img src="<%= pet.image %>" alt="<%= pet.name %>"><br>
+
+    <p><strong>Name:</strong> <%= pet.name %></p>
+    <p><strong>Breed:</strong> <%= pet.breed %></p>
+    <p><strong>Age:</strong> <%= pet.age %></p>
+    <p><strong>Gender:</strong> <%= pet.gender %></p>
+    <p><strong>Size:</strong> <%= pet.size %></p>
+    <p><strong>HDB Approved:</strong> <%= pet.hdbApproved %></p>
+    <p><strong>Status:</strong> <%= pet.status %></p>
+
+    <p><strong>Description:</strong></p>
+    <p><%= pet.description %></p>
+
+    <!-- Buttons -->
+    <!-- Lead to adoption page -->
+    <a href="/adopt-dog">
+        <button>Adopt</button>
+    </a> 
+
+    <!-- Back button -->
+    <a href="/home-display">
+        <button>Back to Home</button>
+    </a>
+</body>
+</html>
