@@ -29,7 +29,7 @@ server.set("view engine", "ejs");
 // Middleware
 server.use("/", express.static(path.join(__dirname, "public")));
 server.use(express.urlencoded({ extended: true }));
-server.use(express.json()); // important for AJAX requests
+server.use(express.json());
 
 server.use(session({
   secret: "mypetappsecret",
@@ -40,7 +40,7 @@ server.use(session({
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
+  .catch(err => console.log("MongoDB error:", err));
 
 // Routes
 server.use("/", authRoutes);
