@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Review Give-up Requests</title>
+</head>
+<body>
+  <h1>Admin Review Give-up Requests</h1>
+
+  <a href="/home-display/admin/giveups/create">
+    <button type="button">Create Give-up Request</button>
+  </a>
+
+  <br><br>
+
+  <% if (error) { %>
+    <p><%= error %></p>
+  <% } %>
+
+  <% if (message) { %>
+    <p><%= message %></p>
+  <% } %>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Submission ID</th>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>Breed</th>
+        <th>Age</th>
+        <th>Owner</th>
+        <th>Status</th>
+        <th>Actions</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (submissions.length === 0) { %>
+        <tr>
+          <td colspan="9">No give-up submissions found.</td>
+        </tr>
+      <% } %>
+
+      <% submissions.forEach((submission) => { %>
+        <tr>
+          <td><%= submission._id %></td>
+          <td>
+            <% if (submission.photo) { %>
+              <img src="<%= submission.photo %>" alt="Pet photo" width="80">
+            <% } else { %>
+              No photo
+            <% } %>
+          </td>
+          <td><%= submission.petName || "-" %></td>
+          <td><%= submission.petBreed || "-" %></td>
+          <td><%= submission.petAge ?? "-" %></td>
+          <td><%= submission.ownerName || submission.userId?.displayName || submission.userId?.username || "-" %></td>
+          <td><%= submission.status %></td>
+          <td>
+            <% if (submission.status === "pending") { %>
+              <form action="/home-display/admin/giveups/approve" method="POST">
+                <input type="hidden" name="id" value="<%= submission._id %>">
+                <button type="submit">Approve</button>
+              </form>
+
+              <form action="/home-display/admin/giveups/reject" method="POST">
+                <input type="hidden" name="id" value="<%= submission._id %>">
+                <button type="submit">Reject</button>
+              </form>
+            <% } else { %>
+              -
+            <% } %>
+
+            <form action="/home-display/admin/giveups/delete" method="POST" onsubmit="return confirm('Delete this give-up request?');">
+              <input type="hidden" name="id" value="<%= submission._id %>">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+          <td>
+            <a href="/home-display/admin/giveups/details?id=<%= submission._id %>">View</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>

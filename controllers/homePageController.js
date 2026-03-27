@@ -74,7 +74,7 @@ exports.getAllPets = async (req, res) => {
   }
 };
 
-// toggle for favourite pet
+// Toggle for favourite pet
 exports.toggleFavourite = async (req, res) => {
   try {
     const userId = req.session.userId;

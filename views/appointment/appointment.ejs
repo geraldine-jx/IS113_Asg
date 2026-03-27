@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <title>
+            Make an Appointment
+        </title>
+    </head>
+    <body>
+        <form action="/process-form" method="post">
+        <h1>Make an Appointment</h1>
+        Name:
+        <input type="text" name="name" value="<%= name %>">
+        <br>
+        <br><html>
+    <head>
+        <title>
+            Make an Appointment
+        </title>
+    </head>
+    <body>
+        <form action="/process-form" method="post">
+        <h1>Make an Appointment</h1>
+        Name:
+        <input type="text" name="name" value="<%= name %>">
+        <br>
+        <br>
+        Contact (+65):
+        <input type="text" name="contact" value="<%= contact %>">
+        <br>
+        <br>
+        Date (DD/MM/YYYY):
+        <input type="text" name="date" value="<%= date %>">
+        <br>
+        <br>
+        Time:
+        <select name="time">
+            <option value="">-- Select Time --</option>
+            <% time.forEach(t => { %>
+                <option value="<%= t %>" 
+                    <%= t === selectedTime ? "selected" : "" %>>
+                    <%= t %>
+                </option>
+           <% }) %>
+        </select>
+        <br>
+        <br>
+        <button type="submit">Confirm Appointment</button>
+        </form>
+        <br>
+        <a href="/manageappointment">Change / Cancel Appointment</a>
+        <br>
+        <br>
+        <a href="/appointmentlist">View Appointment List</a>
+        <% if (message.length > 0) { %>
+            <ul>
+            <% message.forEach(m => { %>
+                <li><%= m %></li>
+            <% }) %>
+            </ul>
+        <% } %>
+<html>
+    <head>
+        <title>Make an Appointment</title>
+    </head>
+    <body>
+        <form action="/process-form" method="post">
+            <h1>Make an Appointment</h1>
+            Name:
+            <input type="text" name="name" value="<%= name %>">
+            <br>
+            <br>
+            Contact (+65):
+            <input type="text" name="contact" value="<%= contact %>">
+            <br>
+            <br>
+            Date (DD/MM/YYYY):
+            <input type="text" name="date" value="<%= date %>">
+            <br>
+            <br>
+            Time:
+            <select name="time">
+                <option value="">-- Select Time --</option>
+                <% time.forEach(t => { %>
+                    <option value="<%= t %>" <%= t === selectedTime ? "selected" : "" %>>
+                        <%= t %>
+                    </option>
+                <% }) %>
+            </select>
+            <br>
+            <br>
+            <button type="submit">Confirm Appointment</button>
+        </form>
+        <br>
+        <a href="/manageappointment">Change / Cancel Appointment</a>
+        <br>
+        <br>
+        <a href="/appointmentlist">View Appointment List</a>
+        <% if (message.length > 0) { %>
+            <ul>
+                <% message.forEach(m => { %>
+                    <li><%= m %></li>
+                <% }) %>
+            </ul>
+        <% } %>
+        <% if (success) { %>
+            <p><%= success %></p>
+        <% } %>
+    </body>
+</html>
+        <% if (success) { %>
+            <p><%= success %></p>
+        <% } %>
+    </body>
+</html>
+        Contact (+65):
+        <input type="text" name="contact" value="<%= contact %>">
+        <br>
+        <br>
+        Date (DD/MM/YYYY):
+        <input type="text" name="date" value="<%= date %>">
+        <br>
+        <br>
+        Time:
+        <select name="time">
+            <option value="">-- Select Time --</option>
+            <% time.forEach(t => { %>
+                <option value="<%= t %>" 
+                    <%= t === selectedTime ? "selected" : "" %>>
+                    <%= t %>
+                </option>
+           <% }) %>
+        </select>
+        <br>
+        <br>
+        <button type="submit">Confirm Appointment</button>
+        </form>
+
+        <br>
+        <a href="/manageappointment">Change / Cancel Appointment</a>
+        <br>
+        <br>
+        <a href="/appointmentlist">View Appointment List</a>
+
+        <% if (message.length > 0) { %>
+            <ul>
+            <% message.forEach(m => { %>
+                <li><%= m %></li>
+            <% }) %>
+            </ul>
+        <% } %>
+
+        <% if (success) { %>
+            <p><%= success %></p>
+        <% } %>
+    </body>
+</html>

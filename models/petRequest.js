@@ -10,6 +10,9 @@ const petRequestSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Pet"
     },
+    ownerName: {
+        type: String
+    },
     requestType: {
         type: String,
         enum: ["adopt", "rehome"],
@@ -23,6 +26,16 @@ const petRequestSchema = new mongoose.Schema({
     },
     petAge: {
         type: Number
+    },
+    petSize: {
+        type:String
+    },
+    petHdbApproved: {
+        type: String,
+        enum: ['Yes','No']
+    },
+    photo: {
+        type:String
     },
     contact: {
         type: String,
