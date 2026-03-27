@@ -4,33 +4,26 @@
     </head>
     <body>
         <h1>Manage Appointment</h1>
-
-        
         <h2>Find Appointment</h2>
         <form action="/findappointment" method="post">
             Contact Number:
             <input type="text" name="contact">
             <button type="submit">Find</button>
         </form>
-
         <hr>
-
         <% if (existing) { %>
             <h3>Current Appointment</h3>
             <p>
                 Date: <strong><%= existing.date %></strong><br>
                 Time: <strong><%= existing.time %></strong>
             </p>
-
             <h2>Change Appointment</h2>
             <form action="/updateappointment" method="post">
                 <input type="hidden" name="contact" value="<%= existing.contact %>">
-
                 New Date (DD/MM/YYYY):
                 <input type="text" name="date" value="<%= existing.date %>">
                 <br>
                 <br>
-
                 New Time:
                 <select name="time">
                     <% time.forEach(t => { %>
@@ -41,13 +34,10 @@
                 </select>
                 <br>
                 <br>
-
                 <button type="submit">Update Appointment</button>
             </form>
-
             <hr>
         <% } %>
-
         <h2>Cancel Appointment</h2>
         <form action="/deleteappointment" method="post" onsubmit="return confirmDelete()">
             Contact Number:
@@ -56,16 +46,13 @@
             <br>
             <button type="submit">Cancel Appointment</button>
         </form>
-
         <script>
-            function confirmDelete() {
+            function confirmDelete() { // confirm is the browser pop up
                 return confirm("Are you sure you want to cancel this appointment?");
             }
         </script>
-
         <br>
         <a href="/appointment">Back to Main Page</a>
-
         <% if (message && message.length > 0) { %>
             <ul>
                 <% message.forEach(m => { %>
@@ -73,7 +60,6 @@
                 <% }) %>
             </ul>
         <% } %>
-
         <% if (success) { %>
             <p><%= success %></p>
         <% } %>

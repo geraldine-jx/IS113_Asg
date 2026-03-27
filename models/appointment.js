@@ -32,8 +32,8 @@ exports.addAppointment = function(newAppointment) {
     return Appointment.create(newAppointment);
 };
 exports.editAppointment = function(contact, date, time) {
-    return Appointment.updateOne({contact:contact}, {date:date, time:time});
+    return Appointment.updateOne({ contact:contact }, { date:date, time:time });
 };
 exports.deleteAppointment = function(contact) {
-    return Appointment.deleteOne({contact:contact});
+    return Appointment.deleteOne({ contact:contact });
 };

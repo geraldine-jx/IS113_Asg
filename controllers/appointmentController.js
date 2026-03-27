@@ -17,15 +17,7 @@ const times = {
 
 exports.displayForm = (req, res) => {
     const time = Object.values(times);
-    res.render('appointment', {
-        name: '',
-        contact: '',
-        date: '',
-        time,
-        selectedTime: '',
-        message: [],
-        success: ''
-    });
+    res.render('appointment', { name: '', contact: '', date: '', time, selectedTime: '',message: [], success: '' });
 };
 
 exports.createAppointment = async (req, res) => {
@@ -73,15 +65,7 @@ exports.createAppointment = async (req, res) => {
         success = "Appointment confirmed!";
         console.log(success);
 
-        return res.render("appointment", {
-            name: '',
-            contact: '',
-            date: '',
-            time,
-            selectedTime: '',
-            message: [],
-            success
-        });
+        return res.render("appointment", { name: '', contact: '', date: '', time, selectedTime: '', message: [], success });
 
     } catch (error) {
         console.error(error);
@@ -150,11 +134,7 @@ exports.updateAppointment = async (req, res) => {
     }
 
     if (message.length > 0) {
-        return res.render("appointment/manageappointment", {
-            time,
-            message,
-            success
-        });
+        return res.render("appointment/manageappointment", { time, message, success });
     }
 
     try {
@@ -187,11 +167,7 @@ exports.deleteAnAppointment = async (req, res) => {
 
     if (!contactNo) {
         message.push("Please input a contact number.");
-        return res.render("appointment/manageappointment", {
-            time,
-            message,
-            success
-        });
+        return res.render("appointment/manageappointment", { time, message, success });
     }
 
     try {
@@ -204,11 +180,7 @@ exports.deleteAnAppointment = async (req, res) => {
             success = "Appointment not found";
         }
 
-        res.render("appointment/manageappointment", {
-            time,
-            message: [],
-            success
-        });
+        res.render("appointment/manageappointment", { time, message: [], success });
     } catch (error) {
         console.error(error);
         res.send("Error deleting appointment");
