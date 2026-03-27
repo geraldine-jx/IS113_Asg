@@ -9,7 +9,7 @@ router.get("/appointmentlist", appointmentController.showAppointments);
 router.post("/updateappointment", appointmentController.updateAppointment);
 router.post("/deleteappointment", appointmentController.deleteAnAppointment);
 router.post("/findappointment", appointmentController.loadAppointmentForUpdate);
-
+// export
 module.exports = router;
 //finds list books will be forwarded to books-controller.js
 // then punch req to book-model.js

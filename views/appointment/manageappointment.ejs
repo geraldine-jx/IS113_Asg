@@ -40,6 +40,37 @@
         <% } %>
         <h2>Cancel Appointment</h2>
         <form action="/deleteappointment" method="post" onsubmit="return confirmDelete()">
+
+
+        <h2>Change Appointment</h2>
+        <form action="/updateappointment" method="post">
+            Contact Number:
+            <input type="text" name="contact">
+            <br>
+            <br>
+
+            New Date (DD/MM/YYYY):
+            <input type="text" name="date">
+            <br>
+            <br>
+
+            New Time:
+            <select name="time">
+                <option value="">-- Select Time --</option>
+                <% time.forEach(t => { %>
+                    <option value="<%= t %>"><%= t %></option>
+                <% }) %>
+            </select>
+            <br>
+            <br>
+
+            <button type="submit">Update Appointment</button>
+        </form>
+
+        <hr>
+
+        <h2>Cancel Appointment</h2>
+        <form action="/deleteappointment" method="post">
             Contact Number:
             <input type="text" name="contact">
             <br>
@@ -53,6 +84,13 @@
         </script>
         <br>
         <a href="/appointment">Back to Main Page</a>
+
+            <button type="submit">Cancel Appointment</button>
+        </form>
+
+        <br>
+        <a href="/appointment">Back to Main Page</a>
+
         <% if (message && message.length > 0) { %>
             <ul>
                 <% message.forEach(m => { %>
