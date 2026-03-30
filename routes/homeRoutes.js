@@ -24,5 +24,15 @@ router.post("/admin/giveups/delete", authMiddleware.requireAdmin, adminControlle
 router.get("/admin/listings", authMiddleware.requireAdmin, adminController.showAdoptionListings);
 router.post("/admin/listings/delete", authMiddleware.requireAdmin, adminController.deleteAdoptionListing);
 
+// Admin adoption routes (Matrix)
+router.get("/admin/adoptions/create", authMiddleware.requireAdmin, adminController.showCreateAdoptionForm);
+router.post("/admin/adoptions/create", authMiddleware.requireAdmin, adminController.createAdoption);
+router.get("/admin/adoptions", authMiddleware.requireAdmin, adminController.showAdoptions);
+router.get("/admin/adoptions/details", authMiddleware.requireAdmin, adminController.showAdoptionDetails);
+router.post("/admin/adoptions/approve", authMiddleware.requireAdmin, adminController.approveAdoption);
+router.post("/admin/adoptions/reject", authMiddleware.requireAdmin, adminController.rejectAdoption);
+router.post("/admin/adoptions/delete", authMiddleware.requireAdmin, adminController.deleteAdoption);
+router.get("/admin/adoptions/approved", authMiddleware.requireAdmin, adminController.showApprovedAdoptions);
+
 module.exports = router;
  
