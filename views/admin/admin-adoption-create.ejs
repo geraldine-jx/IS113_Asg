@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Adoption Request</title>
+</head>
+<body>
+  <h1>Create Adoption Request</h1>
+
+  <% if (error) { %><div><%- error %></div><% } %>
+
+  <form action="/home-display/admin/adoptions/create" method="POST">
+    Owner Name:
+    <input type="text" name="ownerName" value="<%= formData.ownerName %>">
+    <br><br>
+
+    Pet Name:
+    <input type="text" name="petName" value="<%= formData.petName %>">
+    <br><br>
+
+    Pet ID (optional):
+    <input type="text" name="petId" value="<%= formData.petId %>">
+    <br><br>
+
+    Contact:
+    <input type="text" name="contact" value="<%= formData.contact %>">
+    <br><br>
+
+    Email:
+    <input type="email" name="email" value="<%= formData.email %>">
+    <br><br>
+
+    Address:
+    <input type="text" name="address" value="<%= formData.address %>">
+    <br><br>
+
+    Housing Type:
+    <select name="housing">
+      <option value="" <%= formData.housing === "" ? "selected" : "" %>>-- Select --</option>
+      <option value="hdb"     <%= formData.housing === "hdb"     ? "selected" : "" %>>HDB</option>
+      <option value="condo"   <%= formData.housing === "condo"   ? "selected" : "" %>>Condominium</option>
+      <option value="landed"  <%= formData.housing === "landed"  ? "selected" : "" %>>Landed Property</option>
+      <option value="others"  <%= formData.housing === "others"  ? "selected" : "" %>>Others</option>
+    </select>
+    <br><br>
+
+    Additional Details:
+    <br>
+    <textarea name="details" rows="5" cols="40"><%= formData.details %></textarea>
+    <br><br>
+
+    <button type="submit">Create Request</button>
+  </form>
+
+  <br>
+  <a href="/home-display/admin/adoptions">
+    <button type="button">Back to Adoption List</button>
+  </a>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Approved Adoption Requests</title>
+</head>
+<body>
+  <h1>Approved Adoption Requests</h1>
+
+  <% if (error) { %><p><%= error %></p><% } %>
+  <% if (message) { %><p><%= message %></p><% } %>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Submission ID</th>
+        <th>Owner Name</th>
+        <th>Pet Name</th>
+        <th>Contact</th>
+        <th>Email</th>
+        <th>Approved By</th>
+        <th>Action</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (submissions.length === 0) { %>
+        <tr><td colspan="8">No approved adoption requests found.</td></tr>
+      <% } %>
+
+      <% submissions.forEach((submission) => { %>
+        <tr>
+          <td><%= submission._id %></td>
+          <td><%= submission.ownerName || "-" %></td>
+          <td><%= submission.petName || "-" %></td>
+          <td><%= submission.contact %></td>
+          <td><%= submission.email %></td>
+          <td><%= submission.approvedBy?.displayName || submission.approvedBy?.username || "-" %></td>
+          <td>
+            <form action="/home-display/admin/adoptions/delete" method="POST"
+                  onsubmit="return confirm('Delete this approved request? The pet will be set back to available.');">
+              <input type="hidden" name="id" value="<%= submission._id %>">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+          <td>
+            <a href="/home-display/admin/adoptions/details?id=<%= submission._id %>">View</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <br>
+  <a href="/home-display/admin/adoptions">
+    <button type="button">Back to All Adoption Requests</button>
+  </a>
+</body>
+</html>
