@@ -25,6 +25,6 @@
     "express-session": "^1.19.0",
     "git": "^0.1.5",
     "mongodb": "^7.1.0",
-    "mongoose": "^9.3.1"
+    "mongoose": "^9.3.3"
   }
 }

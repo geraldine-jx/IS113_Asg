@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Adoption Listings</title>
+</head>
+<body>
+  <h1>Admin Adoption Listings</h1>
+
+  <a href="/auth/admin/dashboard">
+    <button type="button">Back to Dashboard</button>
+  </a>
+
+  <br><br>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Listing ID</th>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>Breed</th>
+        <th>Size</th>
+        <th>Age</th>
+        <th>Status</th>
+        <th>Listing Type</th>
+        <th>Created By</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (listings.length === 0) { %>
+        <tr>
+          <td colspan="10">No adoption listings found.</td>
+        </tr>
+      <% } %>
+
+      <% listings.forEach((listing) => { %>
+        <tr>
+          <td><%= listing._id %></td>
+          <td>
+            <% if (listing.image) { %>
+              <img src="<%= listing.image %>" alt="Pet photo" width="80">
+            <% } else { %>
+              No photo
+            <% } %>
+          </td>
+          <td><%= listing.name %></td>
+          <td><%= listing.breed %></td>
+          <td><%= listing.size %></td>
+          <td><%= listing.age %></td>
+          <td><%= listing.status %></td>
+          <td><%= listing.listingType %></td>
+          <td><%= listing.createdBy?.displayName || listing.createdBy?.username || "-" %></td>
+          <td>
+            <form action="/home-display/admin/listings/delete" method="POST" onsubmit="return confirm('Delete this adoption listing?');">
+              <input type="hidden" name="id" value="<%= listing._id %>">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>

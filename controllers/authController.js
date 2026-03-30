@@ -110,7 +110,7 @@ exports.showRegisterPage = (req, res) => {
     if (usertype === "user") {
         res.render("user/register-user", { error: null });
     } else if (usertype === "admin") {
-        res.render("user/register-admin", { error: null });
+        res.status(404).send("Admin registration is not available");
     } else {
         res.send("Invalid user type");
     }
@@ -200,8 +200,14 @@ exports.showForgotPasswordPage = (req, res) => {
     res.render("user/forgot-password-user", { error: null, message: null });
 };
 
-exports.showAdminDashboardPage = (req, res) => {
-    res.render("admin/admin-dashboard");
+exports.showAdminDashboardPage = async (req, res) => {
+    const admin = await Employee.findOne({
+        _id: req.session.userId
+    }).lean();
+
+    const adminName = admin?.displayName || admin?.username || "Admin";
+
+    res.render("admin/admin-dashboard", { adminName });
 };
 
 exports.resetUserPassword = async (req, res) => {
@@ -256,126 +262,54 @@ exports.resetUserPassword = async (req, res) => {
     res.render("user/login-user", { error: "Password updated successfully. Please sign in." });
 };
 
-exports.registerAdmin = async (req, res) => {
-    const fields = {
-        usertype: "admin",
-        employeeID: req.body.employeeID,
-        password: req.body.password,
-        confirmPassword: req.body.confirmPassword
-    };
-
-    const missingFields = [];
-
-    for (const key in fields) {
-        if (key !== "usertype" && fields[key] === "") {
-            missingFields.push(`<li>${key}</li>`);
-        }
-    }
-
-    if (missingFields.length > 0) {
-        res.render("user/register-admin", {
-            error: buildMissingFieldsError(missingFields)
-        });
-        return;
-    }
-
-    const validEmployee = await Employee.findOne({ employeeID: fields.employeeID });
-
-    if (!validEmployee) {
-        res.render("user/register-admin", {
-            error: "Unable to sign up, EmployeeID not found in approved employee list"
-        });
-        return;
-    }
-
-    if (validEmployee.isRegistered) {
-        res.render("user/register-admin", {
-            error: "This EmployeeID has already been used to create an account"
-        });
-        return;
-    }
-
-    if (fields.password !== fields.confirmPassword) {
-        res.render("user/register-admin", { error: "Passwords must match!!" });
-        return;
-    }
-
-    const existingAdmin = await User.findOne({
-        $or: [
-            { employeeID: validEmployee.employeeID },
-            { username: validEmployee.username },
-            { email: validEmployee.email }
-        ]
-    });
-
-    if (existingAdmin) {
-        res.render("user/register-admin", { error: "Admin account already exists" });
-        return;
-    }
-
-    const hashedPassword = await bcrypt.hash(fields.password, 10);
-
-    const newAdmin = new User({
-        usertype: "admin",
-        employeeID: validEmployee.employeeID,
-        username: validEmployee.username,
-        email: validEmployee.email,
-        password: hashedPassword,
-        displayName: validEmployee.displayName,
-        contact: validEmployee.contact,
-        address: validEmployee.address,
-        bio: validEmployee.bio,
-        dateJoined: new Date()
-    });
-
-    try {
-        await newAdmin.save();
-
-        validEmployee.isRegistered = true;
-        await validEmployee.save();
-
-        console.log(`Admin dateJoined: ${formatDateJoinedForLog(newAdmin.dateJoined)}`);
-        res.render("user/login-admin", { error: "Admin registered successfully. Please sign in." });
-    } catch (error) {
-        const duplicateFieldError = getDuplicateFieldError(error);
-
-        if (duplicateFieldError) {
-            res.render("user/register-admin", { error: duplicateFieldError });
-            return;
-        }
-
-        throw error;
-    }
-};
-
 exports.loginAdmin = async (req, res) => {
-    const employeeID = req.body.employeeID;
-    const password = req.body.password;
+    const employeeID = (req.body.employeeID || "").trim();
+    const password = req.body.password || "";
 
     if (employeeID === "" || password === "") {
-        res.render("user/login-admin", { error: "Please fill in all required fields." });
-        return;
+        return res.render("user/login-admin", {
+            error: "Please enter your Employee ID and password."
+        });
     }
 
-    const foundAdmin = await User.findOne({
-        usertype: "admin",
+    const approvedEmployee = await Employee.findOne({
         employeeID: employeeID
     });
 
-    if (!foundAdmin) {
-        res.render("user/login-admin", { error: "Admin account does not exist" });
-        return;
+    if (!approvedEmployee) {
+        return res.render("user/login-admin", {
+            error: "EmployeeID was not found in the approved employee list"
+        });
     }
 
-    const isMatch = await bcrypt.compare(password, foundAdmin.password);
+    if (!approvedEmployee.password) {
+        return res.render("user/login-admin", {
+            error: "This admin account does not have a password configured in the employees collection."
+        });
+    }
+
+    let isMatch = false;
+
+    if (approvedEmployee.password.startsWith("$2")) {
+        isMatch = await bcrypt.compare(password, approvedEmployee.password);
+    } else {
+        isMatch = password === approvedEmployee.password;
+
+        if (isMatch) {
+            approvedEmployee.password = await bcrypt.hash(password, 10);
+            await approvedEmployee.save();
+        }
+    }
 
     if (!isMatch) {
-        res.render("user/login-admin", { error: "Wrong password" });
-        return;
+        return res.render("user/login-admin", {
+            error: "Wrong password"
+        });
     }
 
-    req.session.userId = foundAdmin._id;
-    req.session.usertype = foundAdmin.usertype;
+    req.session.userId = approvedEmployee._id;
+    req.session.usertype = "admin";
+    req.session.adminName = approvedEmployee.displayName || approvedEmployee.username;
 
     res.redirect("/auth/admin/dashboard");
 };
