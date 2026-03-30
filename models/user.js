@@ -4,10 +4,11 @@ const userSchema = new mongoose.Schema({
     usertype: {
         type: String
     },
+
     employeeID: {
-        type: String,
-        unique: true,
+        type: String
     },
+
     username: {
         type: String,
         unique: true,
@@ -30,7 +31,7 @@ const userSchema = new mongoose.Schema({
     bio: {
         type: String
     },
-    favourites: [{
+    favourites: [{  //remove later!!!!
         type: mongoose.Schema.Types.ObjectId,
         ref: "Pet"
     }],
