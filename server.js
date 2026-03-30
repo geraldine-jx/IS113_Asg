@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+
 const path = require("path");
 const mongoose = require("mongoose");
 const session = require("express-session");
@@ -8,6 +9,7 @@ const session = require("express-session");
 const authRoutes = require("./routes/authRoutes");
 const homeRoutes = require("./routes/homeRoutes");
 const formRoutes = require("./routes/formPage");
+const appointmentRoutes = require("./routes/appointmentRoutes");
 
 const server = express();
 const hostname = "127.0.0.1";
@@ -19,7 +21,7 @@ server.set("view engine", "ejs");
 // Middleware
 server.use("/", express.static(path.join(__dirname, "public")));
 server.use(express.urlencoded({ extended: true }));
-server.use(express.json()); // important for AJAX requests
+server.use(express.json());
 
 server.use(session({
   secret: "mypetappsecret",
@@ -30,14 +32,14 @@ server.use(session({
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
+  .catch(err => console.log("MongoDB error:", err));
 
 // Routes
 server.use("/", authRoutes);
 server.use("/", formRoutes);
 server.use("/home-display", homeRoutes);
+server.use("/", appointmentRoutes);
 
-// Start server
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });

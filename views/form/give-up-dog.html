@@ -4,22 +4,36 @@
     </head>
     <body>
         <h1>Put Up For Adoption</h1>
-        <form action="/give-up-dog" method="get">
-            Name of Dog: <input type="text" name="dogName" value="dogName">
+        <form action="/give-up-dog" method="post">
+            Username: <input type="text" name="userId">
             <br><br>
-            Breed: <input type="text" name="breed" value="breed">
-            <br><br>
-            Size (S/M/L): <input type="text" name="size" value="size">
-            <br><br>
-            Age: <input type="text" name="age" value="age">
-            <br><br>
-            HDB approved (Yes/No): <input type="text" name="hdbApproved" value="hdbApproved">
-            <br><br>
-            Provide a short description of the dog: 
-            <br><textarea name="description" value="description" rows="5" cols="30"></textarea>
+
+            Owner Name: <input type="text" name="ownerName">
             <br><br>
             
+            Name of Dog: <input type="text" name="petName">
+            <br><br>
+            Breed: <input type="text" name="petBreed">
+            <br><br>
+            Size (S/M/L): <input type="text" name="petSize">
+            <br><br>
+            Age: <input type="text" name="petAge">
+            <br><br>
+            HDB approved (Yes/No): <input type="text" name="petHdbApproved">
+            <br><br>
+            Provide a short description of the dog: 
+            <br><textarea name="details" rows="5" cols="30"></textarea>
+            <br><br>
 
+            Reason for giving up your dog:
+            <br><textarea name="reason" rows="5" cols="30"></textarea>
+            <br><br>
+            
+            <input type="file" name="photo" value="photo" accept="image/*" required>
+            <br><br>
+            <button type="submit">Upload</button>
+            
+            <button type="submit">Submit</button>
         </form>
         <br>
 <a href="/home-display">
