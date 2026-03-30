@@ -6,10 +6,14 @@ const favouriteSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
-    pet: { //pet
+    pet: { 
         type: String,
         ref: "Pet",
         required: true
+    },
+    viewCount: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

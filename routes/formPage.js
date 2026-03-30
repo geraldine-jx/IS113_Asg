@@ -1,14 +1,10 @@
 const express = require("express");
-const path = require("path");
-
 const router = express.Router();
+const formController = require("../controllers/formController");
 
-router.get("/give-up-dog", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/form/give-up-dog.html"));
-});
-
-router.get("/adopt-dog", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/form/adopt-dog.html"));
-});
+router.get("/adopt-dog", formController.showAdoptDogPage);
+router.get("/give-up-dog", formController.showGiveUpDogPage);
+router.post("/review-adoption-app", formController.submitAdoptionRequest);
+router.post("/giveups", formController.submitGiveUpRequest);
 
 module.exports = router;

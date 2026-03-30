@@ -17,8 +17,12 @@
 <body>
     <h1>Get to know <%= pet.name %>!</h1><br>
    
-    <img src="<%= pet.image %>" alt="<%= pet.name %>"><br>
+    <img src="<%= pet.image %>" alt="<%= pet.name %>" width="300" height="300"><br>
 
+    <% if (viewCount) { %>
+        <p>Views: <%= viewCount %></p>
+    <%}%>
+    
     <p><strong>Name:</strong> <%= pet.name %></p>
     <p><strong>Breed:</strong> <%= pet.breed %></p>
     <p><strong>Age:</strong> <%= pet.age %></p>
@@ -40,5 +44,7 @@
     <a href="/home-display">
         <button>Back to Home</button>
     </a>
+
+    
 </body>
 </html>

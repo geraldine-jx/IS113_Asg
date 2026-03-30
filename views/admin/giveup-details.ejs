@@ -15,12 +15,15 @@
   <p><strong>Age:</strong> <%= submission.petAge ?? "-" %></p>
   <p><strong>HDB Approved:</strong> <%= submission.petHdbApproved || "-" %></p>
   <p><strong>Contact:</strong> <%= submission.contact %></p>
+  <p><strong>Owner Email:</strong> <%= submission.email || "-" %></p>
   <p><strong>Address:</strong> <%= submission.address %></p>
   <p><strong>Description:</strong> <%= submission.details || "-" %></p>
+  <p><strong>Admin Remarks:</strong> <%= submission.adminRemarks || "-" %></p>
   <p><strong>Owner Username:</strong> <%= submission.userId?.username || "-" %></p>
   <p><strong>Owner Display Name:</strong> <%= submission.userId?.displayName || "-" %></p>
-  <p><strong>Owner Email:</strong> <%= submission.userId?.email || "-" %></p>
+  <p><strong>Submitted By Account Email:</strong> <%= submission.userId?.email || "-" %></p>
   <p><strong>Reviewed By:</strong> <%= submission.approvedBy?.displayName || submission.approvedBy?.username || "-" %></p>
+  <p><strong>Created Listing ID:</strong> <%= submission.petId || "-" %></p>
 
   <% if (submission.photo) { %>
     <p><img src="<%= submission.photo %>" alt="Pet photo" width="220"></p>
