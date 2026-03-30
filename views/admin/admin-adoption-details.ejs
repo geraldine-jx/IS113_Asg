@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Adoption Request Details</title>
+</head>
+<body>
+  <h1>Adoption Request Details</h1>
+
+  <p><strong>Submission ID:</strong> <%= submission._id %></p>
+  <p><strong>Status:</strong> <%= submission.status %></p>
+  <p><strong>Owner Name:</strong> <%= submission.ownerName || "-" %></p>
+  <p><strong>Pet Name:</strong> <%= submission.petName || "-" %></p>
+  <p><strong>Contact:</strong> <%= submission.contact %></p>
+  <p><strong>Email:</strong> <%= submission.email %></p>
+  <p><strong>Address:</strong> <%= submission.address %></p>
+  <p><strong>Additional Details:</strong> <%= submission.details || "-" %></p>
+  <p><strong>Submitted By (Username):</strong> <%= submission.userId?.username || "-" %></p>
+  <p><strong>Submitted By (Display Name):</strong> <%= submission.userId?.displayName || "-" %></p>
+  <p><strong>Reviewed By:</strong> <%= submission.approvedBy?.displayName || submission.approvedBy?.username || "-" %></p>
+
+  <br>
+  <a href="/home-display/admin/adoptions">
+    <button type="button">Back to Adoption List</button>
+  </a>
+</body>
+</html>
