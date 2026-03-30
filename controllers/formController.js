@@ -50,16 +50,15 @@ exports.submitGiveUpRequest = async (req, res) => {
   };
 
   try{
-    const pet = await PetRequest.findById(req.body.petId);
-    if (!pet) {
-      console.log("Pet not found");
-
-       };
-    await PetRequest.addPet(data);
+    const pet = await PetRequest.addPet(data);
+    
+    if (!pet){
+      console.log("Failed to create pet request");
+    };
     
   }catch (error){
     console.error(error);
-  }
+  };
 
   res.send("Give up request submitted!");
 };
