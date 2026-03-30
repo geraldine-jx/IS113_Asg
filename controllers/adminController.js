@@ -1,4 +1,5 @@
 const PetRequest = require("../models/petRequest");
+const Pet = require("../models/pet");
 
 //Eashvar's Code:
 
@@ -318,6 +319,7 @@ exports.showAdoptionDetails = async (req, res) => {
 
 // UPDATE: approve adoption request
 exports.approveAdoption = async (req, res) => {
+exports.approveAdoption = async (req, res) => {
   try {
     const submission = await PetRequest.findOneAndUpdate(
       { _id: req.body.id, requestType: "adopt" },
@@ -327,6 +329,11 @@ exports.approveAdoption = async (req, res) => {
 
     if (!submission) {
       return res.status(404).send("Submission not found");
+    }
+
+    // Update the pet's status to adopted
+    if (submission.petId) {
+      await Pet.findByIdAndUpdate(submission.petId, { status: "adopted" });
     }
 
     res.redirect("/home-display/admin/adoptions");
@@ -366,6 +373,11 @@ exports.deleteAdoption = async (req, res) => {
 
     if (!deleted) {
       return res.status(404).send("Submission not found");
+    }
+
+    // If the deleted request was approved, revert the pet status back to available
+    if (deleted.status === "approved" && deleted.petId) {
+      await Pet.findByIdAndUpdate(deleted.petId, { status: "available" });
     }
 
     res.redirect("/home-display/admin/adoptions");
