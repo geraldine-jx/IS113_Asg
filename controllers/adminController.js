@@ -1,4 +1,21 @@
 const PetRequest = require("../models/petRequest");
+const Pet = require("../models/pet");
+
+const buildCreateFormData = (body = {}) => ({
+  ownerName: (body.ownerName || "").trim(),
+  petName: (body.petName || "").trim(),
+  petBreed: (body.petBreed || "").trim(),
+  petAge: (body.petAge || "").trim(),
+  petSize: (body.petSize || "").trim(),
+  petHdbApproved: body.petHdbApproved === "Yes" ? "Yes" : "No",
+  photo: (body.photo || "").trim(),
+  contact: (body.contact || "").trim(),
+  email: (body.email || "").trim(),
+  address: (body.address || "").trim(),
+  details: (body.details || "").trim()
+});
+
+const getAdminRemarks = (body = {}) => (body.adminRemarks || "").trim();
 
 //Eashvar's Code:
 
@@ -6,35 +23,13 @@ const PetRequest = require("../models/petRequest");
 exports.showCreateGiveUpForm = (req, res) => {
   res.render("admin/giveup-create", {
     error: null,
-    formData: {
-      ownerName: "",
-      petName: "",
-      petBreed: "",
-      petAge: "",
-      petSize: "",
-      petHdbApproved: "No",
-      photo: "",
-      contact: "",
-      address: "",
-      details: ""
-    }
+    formData: buildCreateFormData()
   });
 };
 
 // CREATE: admin creates rehome request on behalf of an owner
 exports.createGiveUp = async (req, res) => {
-  const formData = {
-    ownerName: (req.body.ownerName || "").trim(),
-    petName: (req.body.petName || "").trim(),
-    petBreed: (req.body.petBreed || "").trim(),
-    petAge: (req.body.petAge || "").trim(),
-    petSize: (req.body.petSize || "").trim(),
-    petHdbApproved: req.body.petHdbApproved === "Yes" ? "Yes" : "No",
-    photo: (req.body.photo || "").trim(),
-    contact: (req.body.contact || "").trim(),
-    address: (req.body.address || "").trim(),
-    details: (req.body.details || "").trim()
-  };
+  const formData = buildCreateFormData(req.body);
 
   const errors = [];
 
@@ -62,6 +57,10 @@ exports.createGiveUp = async (req, res) => {
     errors.push("Contact is required.");
   }
 
+  if (formData.email === "") {
+    errors.push("Email is required.");
+  }
+
   if (formData.address === "") {
     errors.push("Address is required.");
   }
@@ -85,6 +84,7 @@ exports.createGiveUp = async (req, res) => {
       petHdbApproved: formData.petHdbApproved,
       photo: formData.photo,
       contact: formData.contact,
+      email: formData.email,
       address: formData.address,
       details: formData.details,
       status: "pending"
@@ -144,15 +144,46 @@ exports.showGiveUpDetails = async (req, res) => {
 // UPDATE: approve submission
 exports.approveGiveUp = async (req, res) => {
   try {
-    const submission = await PetRequest.findOneAndUpdate(
-      { _id: req.body.id, requestType: "rehome" },
-      { status: "approved", approvedBy: req.session.userId },
-      { new: true }
-    );
+    const adminRemarks = getAdminRemarks(req.body);
+    const submission = await PetRequest.findOne({
+      _id: req.body.id,
+      requestType: "rehome"
+    });
 
     if (!submission) {
       return res.status(404).send("Submission not found");
     }
+
+    if (submission.status !== "pending") {
+      return res.status(400).send("Only pending submissions can be approved");
+    }
+
+    let listing = null;
+
+    if (submission.petId) {
+      listing = await Pet.findById(submission.petId);
+    }
+
+    if (!listing) {
+      listing = await Pet.create({
+        name: submission.petName || "Unnamed Pet",
+        breed: submission.petBreed || "Unknown Breed",
+        size: submission.petSize || "Unknown Size",
+        age: Number.isFinite(submission.petAge) ? submission.petAge : 0,
+        hdbApproved: submission.petHdbApproved === "Yes" ? "Yes" : "No",
+        description: submission.details || "",
+        image: submission.photo || "",
+        status: "available",
+        listingType: "rehome",
+        createdBy: req.session.userId
+      });
+    }
+
+    submission.status = "approved";
+    submission.approvedBy = req.session.userId;
+    submission.adminRemarks = adminRemarks;
+    submission.petId = listing._id;
+    await submission.save();
 
     res.redirect("/home-display/admin/giveups");
   } catch (err) {
@@ -164,20 +195,66 @@ exports.approveGiveUp = async (req, res) => {
 // UPDATE: reject submission
 exports.rejectGiveUp = async (req, res) => {
   try {
-    const submission = await PetRequest.findOneAndUpdate(
-      { _id: req.body.id, requestType: "rehome" },
-      { status: "rejected", approvedBy: req.session.userId },
-      { new: true }
-    );
+    const submission = await PetRequest.findOne({
+      _id: req.body.id,
+      requestType: "rehome"
+    });
 
     if (!submission) {
       return res.status(404).send("Submission not found");
     }
 
+    if (submission.status !== "pending") {
+      return res.status(400).send("Only pending submissions can be rejected");
+    }
+
+    submission.status = "rejected";
+    submission.approvedBy = req.session.userId;
+    submission.adminRemarks = getAdminRemarks(req.body);
+    await submission.save();
+
     res.redirect("/home-display/admin/giveups");
   } catch (err) {
     console.log(err);
     res.status(500).send("Unable to reject submission");
+  }
+};
+
+// READ: view all adoption listings
+exports.showAdoptionListings = async (req, res) => {
+  try {
+    const listings = await Pet.find()
+      .populate("createdBy", "username displayName email")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.render("admin/adoption-listings", {
+      listings
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Unable to load adoption listings");
+  }
+};
+
+// DELETE: remove an adoption listing
+exports.deleteAdoptionListing = async (req, res) => {
+  try {
+    const deletedListing = await Pet.findByIdAndDelete(req.body.id);
+
+    if (!deletedListing) {
+      return res.status(404).send("Listing not found");
+    }
+
+    await PetRequest.updateMany(
+      { petId: deletedListing._id },
+      { $unset: { petId: 1 } }
+    );
+
+    res.redirect("/home-display/admin/listings");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Unable to delete adoption listing");
   }
 };
 
