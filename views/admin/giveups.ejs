@@ -12,6 +12,12 @@
 
   <br><br>
 
+  <a href="/auth/admin/dashboard">
+    <button type="button">Back to Admin Dashboard</button>
+  </a>
+
+  <br><br>
+
   <% if (error) { %>
     <p><%= error %></p>
   <% } %>
@@ -30,6 +36,7 @@
         <th>Age</th>
         <th>Owner</th>
         <th>Status</th>
+        <th>Admin Remarks</th>
         <th>Actions</th>
         <th>Details</th>
       </tr>
@@ -37,7 +44,7 @@
     <tbody>
       <% if (submissions.length === 0) { %>
         <tr>
-          <td colspan="9">No give-up submissions found.</td>
+          <td colspan="10">No give-up submissions found.</td>
         </tr>
       <% } %>
 
@@ -56,16 +63,15 @@
           <td><%= submission.petAge ?? "-" %></td>
           <td><%= submission.ownerName || submission.userId?.displayName || submission.userId?.username || "-" %></td>
           <td><%= submission.status %></td>
+          <td><%= submission.adminRemarks || "-" %></td>
           <td>
             <% if (submission.status === "pending") { %>
               <form action="/home-display/admin/giveups/approve" method="POST">
                 <input type="hidden" name="id" value="<%= submission._id %>">
+                <textarea name="adminRemarks" rows="3" cols="24" placeholder="Add admin remarks"></textarea>
+                <br>
                 <button type="submit">Approve</button>
-              </form>
-
-              <form action="/home-display/admin/giveups/reject" method="POST">
-                <input type="hidden" name="id" value="<%= submission._id %>">
-                <button type="submit">Reject</button>
+                <button type="submit" formaction="/home-display/admin/giveups/reject">Reject</button>
               </form>
             <% } else { %>
               -

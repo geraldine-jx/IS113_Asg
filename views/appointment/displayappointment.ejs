@@ -14,7 +14,6 @@
                 Contact: <%= a.contact %><br>
                 Date: <%= a.date %><br>
                 Time: <%= a.time %><br><br>
-
                 <form action="/updateappointment" method="post">
                     <input type="hidden" name="contact" value="<%= a.contact %>">
                     Updated Date: <input type="text" name="date">
@@ -26,7 +25,6 @@
                     <input type="hidden" name="contact" value="<%= a.contact %>">
                     <button type="submit">Delete</button>
                 </form>
-
                 <hr>
             <% }) %>
         <% } %>

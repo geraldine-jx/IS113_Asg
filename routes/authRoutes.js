@@ -18,11 +18,9 @@ router.post("/auth/register-user-process", authController.registerUser);
 router.post("/auth/userlogin-process", authController.loginUser);
 router.post("/auth/user/forgot-password", authController.resetUserPassword);
 
-router.post("/auth/register-admin-process", authController.registerAdmin);
 router.post("/auth/adminlogin-process", authController.loginAdmin);
 router.post("/register-user-process", authController.registerUser);
 router.post("/userlogin-process", authController.loginUser);
-router.post("/register-admin-process", authController.registerAdmin);
 router.post("/adminlogin-process", authController.loginAdmin);
 
 router.post("/auth/admin/users/delete", authMiddleware.requireAdmin, authController.deleteUser);
