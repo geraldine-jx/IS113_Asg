@@ -284,7 +284,7 @@ exports.deleteGiveUp = async (req, res) => {
 
 // CREATE: show admin create adoption form
 exports.showCreateAdoptionForm = (req, res) => {
-  res.render("admin/adoption-create", {
+  res.render("admin/admin-adoption-create", {
     error: null,
     formData: {
       ownerName: "",
@@ -322,7 +322,7 @@ exports.createAdoption = async (req, res) => {
   if (formData.housing   === "") errors.push("Housing type is required.");
 
   if (errors.length > 0) {
-    return res.status(400).render("admin/adoption-create", {
+    return res.status(400).render("admin/admin-adoption-create", {
       error: errors.join("<br>"),
       formData
     });
@@ -345,7 +345,7 @@ exports.createAdoption = async (req, res) => {
     res.redirect("/home-display/admin/adoptions");
   } catch (err) {
     console.log(err);
-    res.status(500).render("admin/adoption-create", {
+    res.status(500).render("admin/admin-adoption-create", {
       error: "Unable to create adoption request.",
       formData
     });
@@ -360,7 +360,7 @@ exports.showAdoptions = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    res.render("admin/adoptions", {
+    res.render("admin/admin-adoption", {
       submissions,
       error: null,
       message: null
@@ -386,7 +386,7 @@ exports.showAdoptionDetails = async (req, res) => {
       return res.status(404).send("Submission not found");
     }
 
-    res.render("admin/adoption-details", { submission });
+    res.render("admin/admin-adoption-details", { submission });
   } catch (err) {
     console.log(err);
     res.status(500).send("Unable to load submission details");
@@ -405,7 +405,7 @@ exports.showApprovedAdoptions = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    res.render("admin/approved-adoptions", {
+    res.render("admin/admin-approved-adoptions", {
       submissions,
       error: null,
       message: null
@@ -417,7 +417,6 @@ exports.showApprovedAdoptions = async (req, res) => {
 };
 
 // UPDATE: approve adoption request
-exports.approveAdoption = async (req, res) => {
 exports.approveAdoption = async (req, res) => {
   try {
     const submission = await PetRequest.findOneAndUpdate(
@@ -484,4 +483,4 @@ exports.deleteAdoption = async (req, res) => {
     console.log(err);
     res.status(500).send("Unable to delete submission");
   }
-}};
+};
