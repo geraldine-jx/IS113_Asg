@@ -30,6 +30,7 @@ router.get("/admin/adoptions/details", authMiddleware.requireAdmin, adminControl
 router.post("/admin/adoptions/approve", authMiddleware.requireAdmin, adminController.approveAdoption);
 router.post("/admin/adoptions/reject", authMiddleware.requireAdmin, adminController.rejectAdoption);
 router.post("/admin/adoptions/delete", authMiddleware.requireAdmin, adminController.deleteAdoption);
+router.get("/admin/adoptions/approved", authMiddleware.requireAdmin, adminController.showApprovedAdoptions);
 
 module.exports = router;
  

@@ -317,6 +317,29 @@ exports.showAdoptionDetails = async (req, res) => {
   }
 };
 
+// READ: view all approved adoption requests
+exports.showApprovedAdoptions = async (req, res) => {
+  try {
+    const submissions = await PetRequest.find({ 
+      requestType: "adopt",
+      status: "approved" 
+    })
+      .populate("userId", "username displayName email")
+      .populate("approvedBy", "username displayName")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.render("admin/approved-adoptions", {
+      submissions,
+      error: null,
+      message: null
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Unable to load approved adoption requests");
+  }
+};
+
 // UPDATE: approve adoption request
 exports.approveAdoption = async (req, res) => {
 exports.approveAdoption = async (req, res) => {
@@ -385,4 +408,4 @@ exports.deleteAdoption = async (req, res) => {
     console.log(err);
     res.status(500).send("Unable to delete submission");
   }
-};
+}};
