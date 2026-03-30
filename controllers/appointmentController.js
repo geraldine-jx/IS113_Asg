@@ -59,7 +59,7 @@ exports.createAppointment = async (req, res) => {
         success = "Appointment confirmed!";
         console.log(success);
 
-        return res.render("appointment", { name: '', contact: '', date: '', time, selectedTime: '', message: [], success });
+        return res.render("appointment/appointment", { name: '', contact: '', date: '', time, selectedTime: '', message: [], success });
     } catch (error) {
         console.error(error);
         return res.send("Error adding appointment");
