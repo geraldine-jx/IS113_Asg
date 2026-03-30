@@ -21,6 +21,8 @@ router.get("/admin/giveups/details", authMiddleware.requireAdmin, adminControlle
 router.post("/admin/giveups/approve", authMiddleware.requireAdmin, adminController.approveGiveUp);
 router.post("/admin/giveups/reject", authMiddleware.requireAdmin, adminController.rejectGiveUp);
 router.post("/admin/giveups/delete", authMiddleware.requireAdmin, adminController.deleteGiveUp);
+router.get("/admin/listings", authMiddleware.requireAdmin, adminController.showAdoptionListings);
+router.post("/admin/listings/delete", authMiddleware.requireAdmin, adminController.deleteAdoptionListing);
 
 module.exports = router;
  
