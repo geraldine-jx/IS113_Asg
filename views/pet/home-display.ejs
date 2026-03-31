@@ -50,21 +50,24 @@
 
                 <!-- Buttons -->
                 <!-- Lead to adoption page -->
-                <a href="/adopt-dog">
-                    <button>Adopt</button>
-                </a>
-                
-                <!-- Lead to more info for specific dog -->
-                <a href="/home-display/pets/<%= pet._id %>">
-                     <button type="button">More Info</button>
-                </a>
+                <% if (pet.status!= "adopted"){ %>
+                    <a href="/adopt-dog">
+                        <button>Adopt</button>
+                    </a>
 
-                <!-- favourites button -->
-                <form action="/home-display/pets/<%= pet._id %>/toggleFavourite" method="POST" style="display:inline;">
-                    <button type="submit" class="heart">
-                    <%= favourites.includes(pet._id.toString()) ? "❤️" : "🤍" %>
-                </button>
-                </form>
+                    <!-- Lead to more info for specific dog -->
+                    <a href="/home-display/pets/<%= pet._id %>">
+                        <button type="button">More Info</button>
+                    </a>
+                    
+                    <!-- favourites button -->
+                    <form action="/home-display/pets/<%= pet._id %>/toggleFavourite" method="POST" style="display:inline;">
+                        <button type="submit" class="heart">
+                            <%= favourites.includes(pet._id.toString()) ? "❤️" : "🤍" %>
+                        </button>
+                    </form>
+                <% } %>
+                
             </td>
         </tr>
         <% }) %>

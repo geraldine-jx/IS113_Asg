@@ -122,5 +122,3 @@ exports.getPetDetails = async (req, res) => {
     res.send("Error loading pet details");
   }
 };
-
-
