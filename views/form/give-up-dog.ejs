@@ -9,7 +9,7 @@
             Username: <input type="text" name="username" id="username" readonly required>
             <br><br>
             <!-- autofilled-->
-            Owner Name: <input type="text" name="displayName" id="displayName" readonly required>
+            Owner Name: <input type="text" name="ownerName" id="ownerName" readonly required>
             <br><br>
             Contact Number: <input type="text" name="contact" id="contact" readonly required>
             <br><br>
@@ -55,7 +55,7 @@
 
                     // Autofill user details
                     document.getElementById("username").value = user.username;
-                    document.getElementById("displayName").value = user.displayName;
+                    document.getElementById("ownerName").value = user.displayName;
                     document.getElementById("contact").value = user.contact;
                     document.getElementById("address").value = user.address;
                     document.getElementById("email").value = user.email;
@@ -70,7 +70,7 @@
         <br><br>
         <a href="/my-rehome-requests">View Give Up Pet Request List</a>
 
-        <% if (message && message.length > 0) { %>
+        <!-- <% if (message && message.length > 0) { %> 
             <ul>
                 <% message.forEach(m => { %>
                     <li><%= m %></li>
@@ -80,7 +80,7 @@
 
         <% if (success) { %>
             <p><%= success %></p>
-        <% } %>
+        <% } %> -->
 
     </body>
 </html>

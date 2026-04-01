@@ -10,7 +10,7 @@
             <!-- autofilled-->
             Username: <input type="text" name="username" id="username" readonly required>
             <br><br>
-            Full Name: <input type="text" name="displayName" id="displayName" readonly required>
+            Full Name: <input type="text" name="ownerName" id="ownerName" readonly required>
             <br><br>
             Contact Number: <input type="text" name="contact" id="contact" readonly required>
             <br><br>
@@ -42,8 +42,17 @@
             <button type="submit">Submit</button>
             </a>
             <br><br><br>
+
+            <a href='/manage-adopt-request'>
+                <button type="button">Manage Adopt Requests</button>
+            </a>
+            <br><br>
+            <a href="/my-adopt-requests">
+                <button type="button">View My Adopt Requests</button>
+            </a>    
+            <br><br>
             <a href="/home-display">
-            <button type="button">Back to Home Page</button>
+                <button type="button">Back to Home Page</button>
             </a>
         </form>
 
@@ -56,7 +65,7 @@
                     // Autofill user details
                     document.getElementById("username").value = user.username;
                     document.getElementById("userId").value = user._id;
-                    document.getElementById("displayName").value = user.displayName;
+                    document.getElementById("ownerName").value = user.displayName;
                     document.getElementById("contact").value = user.contact;
                     document.getElementById("email").value = user.email;
                     document.getElementById("address").value = user.address;
