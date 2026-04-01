@@ -8,7 +8,7 @@ const session = require("express-session");
 
 const authRoutes = require("./routes/authRoutes");
 const homeRoutes = require("./routes/homeRoutes");
-const formRoutes = require("./routes/formPage");
+const formPageRoutes = require("./routes/formPageRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 
 const server = express();
@@ -33,10 +33,21 @@ server.use(session({
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log("MongoDB error:", err));
+// mongoose.connect(process.env.MONGODB_URI)
+//   .then(() => {
+//     console.log("MongoDB connected");
+
+//     server.listen(port, hostname, () => {
+//       console.log(`Server running at http://${hostname}:${port}/`);
+//     });
+//   })
+//   .catch(err => {
+//     console.log("MongoDB error:", err);
+//   });
 
 // Routes
 server.use("/", authRoutes);
-server.use("/", formRoutes);
+server.use("/", formPageRoutes);
 server.use("/home-display", homeRoutes);
 server.use("/", appointmentRoutes);
 

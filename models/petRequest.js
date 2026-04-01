@@ -73,19 +73,19 @@ const petRequestSchema = new mongoose.Schema({
 
 const PetRequest = mongoose.model("PetRequest", petRequestSchema);
 
-exports.findById = function(petId) {
-    return PetRequest.findOne({petId: petId});
-};
+// exports.findById = function(petId) {
+//     return PetRequest.findOne({petId: petId});
+// };
 
-exports.addPet = function(){
-    return PetRequest.create();
-};
+// exports.addPet = function(newPet){
+//     return PetRequest.create(newPet);
+// };
 
-exports.findByIdAndUpdate = function(userId, petId) {
-    return PetRequest.updateOne({userId: userId}, {petId: petId});
-};
+// exports.findByIdAndUpdate = function(userId, petId, housing) {
+//     return PetRequest.updateOne({userId: userId, petId: petId}, {housing: housing});
+// };
 
-exports.findByIdAndDelete = function(userId, petId) {
-    return PetRequest.deleteOne({userId: userId, petId: petId});
-};
+// exports.findByIdAndDelete = function(userId, petId) {
+//     return PetRequest.deleteOne({userId: userId, petId: petId});
+// };
 module.exports = PetRequest;
