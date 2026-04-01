@@ -1,66 +1,131 @@
 const path = require("path");
 const User = require("../models/user");
-const PetRequest = require("../models/petRequest.js");
+const PetRequest = require("../models/petRequest");
+const { Admin } = require("mongodb");
 
 
 exports.showAdoptDogPage = (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public", "adopt-dog.html"));
+  // res.sendFile(path.join(__dirname, "..", "views/form", "adopt-dog.html"));
+  const petId = req.query.petId; // Get petId from query parameters
+  res.render("form/adopt-dog", { petId }); // Pass petId to the EJS template
 };
 
 exports.showGiveUpDogPage = (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public", "give-up-dog.html"));
+  //res.sendFile(path.join(__dirname, "..", "views/form", "give-up-dog.ejs"));
+  res.render("form/give-up-dog");
 };
 
+// READ
+exports.getUserDetails = async (req, res) => {
+    try {
+        console.log("Session userId:", req.session.userId);
+        const user = await User.findById(req.session.userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 // READ AND CREATE
 exports.submitAdoptionRequest = async (req, res) => {
-  const data = {
-    userId: req.body.userId,
-    ownerName: req.body.ownerName,
-    contactNo: req.body.contactNo,
-    address: req.body.address,
-    email: req.body.email,
-    petName: req.body.petName,
-    petId: req.body.petId,
-    housing: req.body.housing
-  };
+    try {
+      const petId = req.params.id;
+      const userId = req.session.userId;
+      // const userId= req.body.userId;
+      const username = req.body.username;
+      const ownerName= req.body.ownerName;
+      const contact = req.body.contact;
+      const address= req.body.address;
+      const email= req.body.email;
+      const petName= req.body.petName;
+      // const petId= req.body.petId;
+      const housing = req.body.housing;
+      const requestType= "adopt";
+      const status= "pending";
 
-  try{
-    let pet = await PetRequest.create(data);
-    
-  }catch (error){
+      const newPet = {
+        userId,
+        username,
+        ownerName,
+        contact,
+        address,
+        email,
+        petName,
+        petId,
+        housing,
+        requestType: 'adopt',
+        status: 'pending'
+
+      }
+      
+      await PetRequest.addPet(newPet);
+ 
+      console.log('request submitted successfully!');
+      // return res.send('Request submitted successfully!');
+      return res.redirect('/appointment');
+
+
+  } catch (error){
     console.error(error);
-  }
-
-  res.send("Adoption request submitted!");
+    return res.status(500).send("Error submitting adoption request");
+  };
 };
+
 
 // CREATE
 exports.submitGiveUpRequest = async (req, res) => {
-  const data = {
-    userId: req.body.userId,
-    ownerName: req.body.ownerName,
-    petName: req.body.petName,
-    petBreed: req.body.petBreed,
-    petSize: req.body.petSize,
-    petAge: req.body.petAge,
-    petHdbApproved: req.body.petHdbApproved,
-    reason: req.body.reason,
-    details: req.body.details,
-    photo: req.body.photo
-  };
+  try {      
+    const userId = req.session.userId;
+    const username = req.body.username;
+    const ownerName= req.body.ownerName;
+    const contact = req.body.contact;
+    const address= req.body.address;
+    const email= req.body.email;
 
-  try{
-    const pet = await PetRequest.addPet(data);
+    const petName= req.body.petName;
+    const petBreed= req.body.petBreed;
+    const petSize= req.body.petSize;
+    const petAge= req.body.petAge;
+    const petHdbApproved= req.body.petHdbApproved;
+    const reason= req.body.reason;
+    const details= req.body.details;
+    const photo= req.body.photo;
+    const requestType= "rehome";
+    const status= "pending";
+
+
+  const newPet = {
+        userId,
+        username,
+        ownerName,
+        contact,
+        address,
+        email,
+        petName,
+        petBreed,
+        petSize,
+        petAge,
+        petHdbApproved,
+        reason,
+        details,
+        photo,
+        requestType: 'rehome',
+        status: 'pending'
+      }
+  
+ 
+    await PetRequest.addPet(newPet);
     
-    if (!pet){
-      console.log("Failed to create pet request");
-    };
-    
+      console.log('request submitted successfully!');
+      // return res.send('Request submitted successfully!');
+      return res.redirect('/appointment');
   }catch (error){
     console.error(error);
   };
-
-  res.send("Give up request submitted!");
+  
 };
 
 // UPDATE

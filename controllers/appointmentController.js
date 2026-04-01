@@ -66,17 +66,6 @@ exports.createAppointment = async (req, res) => {
     }
 };
 
-exports.showAppointments = async (req, res) => {
-    try {
-        let appointmentList = await Appointment.retrieveAll();
-        console.log(appointmentList);
-        res.render("appointment/displayappointment", { appointmentList, success: '' });
-    } catch (error) {
-        console.log(error);
-        res.send("Error reading database");
-    }
-};
-
 exports.showManageAppointment = async (req, res) => {
     const time = Object.values(times);
     res.render("appointment/manageappointment", { time, message: [], success: '', existing: null});
@@ -180,5 +169,33 @@ exports.deleteAnAppointment = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.send("Error deleting appointment");
+    }
+};
+
+exports.showMyAppointmentForm = (req, res) => {
+    res.render("appointment/findappointment", { appointment: null, message: [] });
+};
+
+exports.showMyAppointmentResult = async (req, res) => {
+    const contactNo = req.body.contact ? req.body.contact.replaceAll(" ", "") : "";
+    let message = [];
+
+    if (!contactNo) {
+        message.push("Please input a contact number.");
+        return res.render("appointment/findappointment", { appointment: null, message });
+    }
+
+    try {
+        const appointment = await Appointment.findByContact(contactNo);
+
+        if (!appointment) {
+            message.push("Appointment not found.");
+            return res.render("appointment/findappointment", { appointment: null, message });
+        }
+
+        return res.render("appointment/findappointment", { appointment, message: [] });
+    } catch (error) {
+        console.error(error);
+        return res.send("Error finding appointment");
     }
 };
