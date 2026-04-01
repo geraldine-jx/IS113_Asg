@@ -1,0 +1,99 @@
+<html>
+    <head>
+        <title>Manage Give Up Requests</title>
+    </head>
+    <body>
+        <h1>Manage Give Up Requests</h1>
+
+        <h2>Find Give Up Request</h2>
+        <form action="/find-giveup-request" method="post">
+            Contact Number:
+            <input type="text" name="contact">
+            <button type="submit">Find</button>
+        </form>
+
+        <hr>
+
+        <% if (existing) { %>
+            <h3>Current Give Up Request</h3>
+            <p>
+                Pet Name: <strong><%= existing.petName %></strong><br>
+                Pet Breed: <strong><%= existing.petBreed %></strong><br>
+                Pet Size: <strong><%= existing.petSize %></strong><br>
+                Pet Age: <strong><%= existing.petAge %></strong><br>
+                Pet HDB Approved: <strong><%= existing.petHdbApproved %></strong><br>
+                Reason: <strong><%= existing.reason %></strong><br>
+                Details: <strong><%= existing.details %></strong><br>
+                Photo: <strong><%= existing.photo %></strong><br>
+            </p>
+
+            <h2>Change Give Up Request</h2>
+            <form action="/update-giveup-request" method="post">
+                <input type="hidden" name="contact" value="<%= existing.contact %>">
+
+                New Pet Name: 
+                <input type="text" name="petName" value="<%= existing.petName %>">
+                <br><br>
+                New Pet Breed:
+                <input type="text" name="petBreed" value="<%= existing.petBreed %>">
+                <br><br>
+                New Pet Size:
+                <input type="text" name="petSize" value="<%= existing.petSize %>">
+                <br><br>
+                New Pet Age:
+                <input type="text" name="petAge" value="<%= existing.petAge %>">
+                <br><br>
+                Pet HDB Approved:
+                <input type="text" name="petHdbApproved" value="<%= existing.petHdbApproved %>">
+                <br><br>
+                Reason:
+                <textarea name="reason" rows="5" cols="30"><%= existing.reason %
+                </textarea>
+                <br><br>
+                Details:
+                <textarea name="details" rows="5" cols="30"><%= existing.details %
+                </textarea>
+                <br><br>
+                New Photo:
+                <input type="file" name="photo" value="<%= existing.photo %>" accept="image/*">
+                <br><br>
+
+    
+
+                <button type="submit">Update Appointment</button>
+            </form>
+
+            <hr>
+        <% } %>
+
+        <h2>Delete Give Up Request</h2>
+        <form action="/delete-giveup-request" method="post" onsubmit="return confirmDelete()">
+            Contact Number:
+            <input type="text" name="contact">
+            <br><br>
+            <button type="submit">Delete Give Up Request</button>
+        </form>
+
+        <script>
+            function confirmDelete() {
+                return confirm("Are you sure you want to delete this give up request?");
+            }
+        </script>
+
+        <br>
+        <a href="/my-rehome-requests">Back to Give Up Requests List</a>
+
+
+        <% if (message && message.length > 0) { %>
+            <ul>
+                <% message.forEach(m => { %>
+                    <li><%= m %></li>
+                <% }) %>
+            </ul>
+        <% } %>
+
+        <% if (success) { %>
+            <p><%= success %></p>
+        <% } %>
+    </body>
+</html>

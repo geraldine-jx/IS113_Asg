@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>List of Adopt Requests</title>
+    </head>
+    <body>
+        <h1>List of Adopt Requests</h1>
+
+        <% if (success) { %>
+            <p><%= success %></p>
+        <% } %>
+
+        <% if (!adoptList || adoptList.length === 0) { %>
+            <p>No adopt requests yet.</p>
+        <% } else { %>
+            <% adoptList.forEach(a => { %>
+                <p>Housing: <%= a.housing %></p>
+
+                <hr>
+            <% }) %>
+        <% } %>
+
+        <br>
+        <a href="/adopt-dog">Back to Adopt Form</a>
+    </body>
+</html>
