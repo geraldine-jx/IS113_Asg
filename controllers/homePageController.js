@@ -28,7 +28,7 @@ async function incrementViewCount(userId, petId) {
   );
   return fav;
 }
-
+ 
 //For reccomendation,get pet with top view count
 async function getTopFavouritePet(favDocs) {
   if (!favDocs || favDocs.length === 0) return null;
