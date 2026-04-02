@@ -1,0 +1,86 @@
+<html>
+    <head>
+        <title>Put Up For Adoption</title>
+    </head>
+    <body>
+        <h1>Put Up For Adoption</h1>
+        <form action="/give-up-dog" method="post">
+            <input type="hidden" name="userId" id="userId" value='' />
+            Username: <input type="text" name="username" id="username" readonly required>
+            <br><br>
+            <!-- autofilled-->
+            Owner Name: <input type="text" name="ownerName" id="ownerName" readonly required>
+            <br><br>
+            Contact Number: <input type="text" name="contact" id="contact" readonly required>
+            <br><br>
+            Address: <input type="text" name="address" id="address" readonly required>
+            <br><br>
+            Email: <input type="email" name="email" id="email" readonly required>
+            <br><br>
+
+            Name of Dog: <input type="text" name="petName" id="petName" required>
+            <br><br>
+            Breed: <input type="text" name="petBreed" id="petBreed" required>
+            <br><br>
+            Size (S/M/L): <input type="text" name="petSize" id="petSize" required>
+            <br><br>
+            Age: <input type="text" name="petAge" id="petAge" required>
+            <br><br>
+            HDB approved (Yes/No): <input type="text" name="petHdbApproved" id="petHdbApproved" required>
+            <br><br>
+            Provide a short description of the dog: 
+            <br><textarea name="details" id="details" rows="5" cols="30"></textarea>
+            <br><br>
+
+            Reason for giving up your dog:
+            <br><textarea name="reason" rows="5" cols="30"></textarea>
+            <br><br>
+            
+            <input type="file" name="photo" value="photo" accept="image/*">
+            <br><br>
+            <button type="submit">Upload</button>
+            
+            <button type="submit">Submit</button>
+        </form>
+        <br>
+        <a href="/home-display">
+        <button type="button">Back to Home Page</button>
+        </a>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", async () => {
+                try {
+                    const response = await fetch("/user-details");
+                    const user = await response.json();
+
+                    // Autofill user details
+                    document.getElementById("username").value = user.username;
+                    document.getElementById("ownerName").value = user.displayName;
+                    document.getElementById("contact").value = user.contact;
+                    document.getElementById("address").value = user.address;
+                    document.getElementById("email").value = user.email;
+                } catch (error) {
+                    console.error("Error fetching user details:", error);
+                }
+            });
+        </script>
+        <br><br>
+        <a href="/manage-rehome-request">Change / Cancel Give Up Pet Request</a>
+
+        <br><br>
+        <a href="/my-rehome-requests">View Give Up Pet Request List</a>
+
+        <!-- <% if (message && message.length > 0) { %> 
+            <ul>
+                <% message.forEach(m => { %>
+                    <li><%= m %></li>
+                <% }) %>
+            </ul>
+        <% } %>
+
+        <% if (success) { %>
+            <p><%= success %></p>
+        <% } %> -->
+
+    </body>
+</html>
