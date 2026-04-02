@@ -338,6 +338,7 @@ exports.createAdoption = async (req, res) => {
       contact:     formData.contact,
       email:       formData.email,
       address:     formData.address,
+      housing:     formData.housing,
       details:     formData.details,
       status:      "pending"
     });
@@ -419,20 +420,40 @@ exports.showApprovedAdoptions = async (req, res) => {
 // UPDATE: approve adoption request
 exports.approveAdoption = async (req, res) => {
   try {
-    const submission = await PetRequest.findOneAndUpdate(
-      { _id: req.body.id, requestType: "adopt" },
-      { status: "approved", approvedBy: req.session.userId },
-      { new: true }
-    );
+    const submission = await PetRequest.findOne({
+      _id: req.body.id,
+      requestType: "adopt"
+    });
 
     if (!submission) {
       return res.status(404).send("Submission not found");
     }
 
+    if (submission.status !== "pending") {
+      return res.status(400).send("Only pending submissions can be approved");
+    }
+
     // Update the pet's status to adopted
     if (submission.petId) {
       await Pet.findByIdAndUpdate(submission.petId, { status: "adopted" });
+
+      await PetRequest.updateMany(
+        {
+          petId: submission.petId,
+          requestType: "adopt",
+          _id: { $ne: submission._id },
+          status: "pending"
+        },
+        {
+          status: "rejected",
+          adminRemarks: "Another adoption request for this pet was approved."
+        }
+      );
     }
+
+    submission.status = "approved";
+    submission.approvedBy = req.session.userId;
+    await submission.save();
 
     res.redirect("/home-display/admin/adoptions");
   } catch (err) {
@@ -444,15 +465,22 @@ exports.approveAdoption = async (req, res) => {
 // UPDATE: reject adoption request
 exports.rejectAdoption = async (req, res) => {
   try {
-    const submission = await PetRequest.findOneAndUpdate(
-      { _id: req.body.id, requestType: "adopt" },
-      { status: "rejected", approvedBy: req.session.userId },
-      { new: true }
-    );
+    const submission = await PetRequest.findOne({
+      _id: req.body.id,
+      requestType: "adopt"
+    });
 
     if (!submission) {
       return res.status(404).send("Submission not found");
     }
+
+    if (submission.status !== "pending") {
+      return res.status(400).send("Only pending submissions can be rejected");
+    }
+
+    submission.status = "rejected";
+    submission.approvedBy = req.session.userId;
+    await submission.save();
 
     res.redirect("/home-display/admin/adoptions");
   } catch (err) {

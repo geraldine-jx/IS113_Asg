@@ -1,322 +1,505 @@
-const path = require("path");
 const User = require("../models/user");
+const Pet = require("../models/pet");
 const PetRequest = require("../models/petRequest");
-const { Admin } = require("mongodb");
 
+const normalizeContact = (value = "") => value.replaceAll(" ", "").trim();
 
-exports.showAdoptDogPage = (req, res) => {
-  // res.sendFile(path.join(__dirname, "..", "views/form", "adopt-dog.html"));
-  const petId = req.query.petId; // Get petId from query parameters
-  res.render("form/adopt-dog", { petId }); // Pass petId to the EJS template
+const buildAdoptFormData = (body = {}) => ({
+  housing: body.housing || "",
+  housingOther: body.housingOther || ""
+});
+
+const buildGiveUpFormData = (body = {}) => ({
+  petName: body.petName || "",
+  petBreed: body.petBreed || "",
+  petSize: body.petSize || "",
+  petAge: body.petAge || "",
+  petHdbApproved: body.petHdbApproved || "No",
+  details: body.details || "",
+  reason: body.reason || "",
+  photo: body.photo || ""
+});
+
+const renderAdoptPage = (res, options = {}) => {
+  res.render("form/adopt-dog", {
+    petId: options.petId || "",
+    petName: options.petName || "",
+    error: options.error || null,
+    formData: options.formData || buildAdoptFormData()
+  });
+};
+
+const renderGiveUpPage = (res, options = {}) => {
+  res.render("form/give-up-dog", {
+    error: options.error || null,
+    message: options.message || [],
+    success: options.success || "",
+    formData: options.formData || buildGiveUpFormData()
+  });
+};
+
+const renderManageAdoptPage = (res, options = {}) => {
+  res.render("form/manage-adopt-request", {
+    existing: options.existing || null,
+    message: options.message || [],
+    success: options.success || ""
+  });
+};
+
+const renderManageRehomePage = (res, options = {}) => {
+  res.render("form/manage-rehome-request", {
+    existing: options.existing || null,
+    message: options.message || [],
+    success: options.success || ""
+  });
+};
+
+exports.showAdoptDogPage = async (req, res) => {
+  const petId = req.query.petId || "";
+
+  if (!petId) {
+    return renderAdoptPage(res, {
+      error: "Please choose a pet from the home page before submitting an adoption request."
+    });
+  }
+
+  try {
+    const pet = await Pet.findById(petId).lean();
+
+    if (!pet) {
+      return renderAdoptPage(res, {
+        error: "Selected pet was not found."
+      });
+    }
+
+    renderAdoptPage(res, {
+      petId: pet._id.toString(),
+      petName: pet.name
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error loading adoption form");
+  }
 };
 
 exports.showGiveUpDogPage = (req, res) => {
-  //res.sendFile(path.join(__dirname, "..", "views/form", "give-up-dog.ejs"));
-  res.render("form/give-up-dog");
+  renderGiveUpPage(res);
 };
 
 exports.showManageRehomeRequestPage = async (req, res) => {
-    const contactNo = req.body.contact;
-    res.render("form/my-rehome-requests", { contactNo, message: [], success: '', existing: null});
+  const contact = normalizeContact(req.body?.contact || "");
 
-};  
+  if (contact === "") {
+    return renderManageRehomePage(res);
+  }
+
+  try {
+    const existing = await PetRequest.findOne({
+      userId: req.session.userId,
+      requestType: "rehome",
+      contact
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    if (!existing) {
+      return renderManageRehomePage(res, {
+        message: ["No give-up request found for this contact number."]
+      });
+    }
+
+    renderManageRehomePage(res, { existing });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error loading give up request");
+  }
+};
 
 exports.showManageAdoptRequestPage = async (req, res) => {
-    const contactNo = req.body.contact;
-    res.render("form/my-adopt-requests", { contactNo, message: [], success: '', existing: null});
+  const contact = normalizeContact(req.body?.contact || "");
 
+  if (contact === "") {
+    return renderManageAdoptPage(res);
+  }
+
+  try {
+    const existing = await PetRequest.findOne({
+      userId: req.session.userId,
+      requestType: "adopt",
+      contact
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    if (!existing) {
+      return renderManageAdoptPage(res, {
+        message: ["No adoption request found for this contact number."]
+      });
+    }
+
+    renderManageAdoptPage(res, { existing });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error loading adoption request");
+  }
 };
 
 exports.showMyAdoptRequests = async (req, res) => {
-    const userId = req.session.userId;
-    try {
-        const adoptList = await PetRequest.find({ userId: userId, requestType: 'adopt' });
-        res.render("form/my-adopt-requests", { adoptList, message: [], success: '', existing: null });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Error retrieving adopt requests");
-    }
-};  
+  try {
+    const adoptList = await PetRequest.find({
+      userId: req.session.userId,
+      requestType: "adopt"
+    }).sort({ createdAt: -1 });
+
+    res.render("form/my-adopt-requests", { adoptList, success: "" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error retrieving adopt requests");
+  }
+};
 
 exports.showMyRehomeRequests = async (req, res) => {
-    const userId = req.session.userId;
-    try {
-        const giveupList = await PetRequest.find({ userId: userId, requestType: 'rehome' });
-        res.render("form/my-rehome-requests", { giveupList, message: [], success: '', existing: null });
-    } catch (error) {
-        console.error(error);        
-        res.status(500).send("Error retrieving give up requests");
-    }
+  try {
+    const giveupList = await PetRequest.find({
+      userId: req.session.userId,
+      requestType: "rehome"
+    }).sort({ createdAt: -1 });
+
+    res.render("form/my-rehome-requests", { giveupList, success: "" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error retrieving give up requests");
+  }
 };
-// READ
+
 exports.getUserDetails = async (req, res) => {
-    try {
-        console.log("Session userId:", req.session.userId);
-        const user = await User.findById(req.session.userId);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        res.json(user);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error" });
+  try {
+    const user = await User.findById(req.session.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
-// READ AND CREATE
+
 exports.submitAdoptionRequest = async (req, res) => {
-    try {
-      const petId = req.params.id;
-      const userId = req.session.userId;
-      // const userId= req.body.userId;
-      const username = req.body.username;
-      const ownerName= req.body.ownerName;
-      const contact = req.body.contact;
-      const address= req.body.address;
-      const email= req.body.email;
-      const petName= req.body.petName;
-      // const petId= req.body.petId;
-      const housing = req.body.housing;
-      const requestType= "adopt";
-      const status= "pending";
-
-      const newPet = {
-        userId,
-        username,
-        ownerName,
-        contact,
-        address,
-        email,
-        petName,
-        petId,
-        housing,
-        requestType: 'adopt',
-        status: 'pending'
-
-      }
-      
-      await PetRequest.addPet(newPet);
- 
-      console.log('request submitted successfully!');
-      // return res.send('Request submitted successfully!');
-      return res.redirect('/appointment');
-
-
-  } catch (error){
-    console.error(error);
-    return res.status(500).send("Error submitting adoption request");
-  };
-};
-
-
-// CREATE
-exports.submitGiveUpRequest = async (req, res) => {
-  try {      
+  try {
     const userId = req.session.userId;
-    const username = req.body.username;
-    const ownerName= req.body.ownerName;
-    const contact = req.body.contact;
-    const address= req.body.address;
-    const email= req.body.email;
+    const username = (req.body.username || "").trim();
+    const ownerName = (req.body.ownerName || "").trim();
+    const contact = normalizeContact(req.body.contact || "");
+    const address = (req.body.address || "").trim();
+    const email = (req.body.email || "").trim();
+    const petId = (req.body.petId || "").trim();
+    const housing = req.body.housing === "others"
+      ? (req.body.housingOther || "").trim()
+      : (req.body.housing || "").trim();
 
-    const petName= req.body.petName;
-    const petBreed= req.body.petBreed;
-    const petSize= req.body.petSize;
-    const petAge= req.body.petAge;
-    const petHdbApproved= req.body.petHdbApproved;
-    const reason= req.body.reason;
-    const details= req.body.details;
-    const photo= req.body.photo;
-    const requestType= "rehome";
-    const status= "pending";
+    const pet = petId ? await Pet.findById(petId).lean() : null;
 
+    if (!userId || !pet || !contact || !address || !email || !housing) {
+      return renderAdoptPage(res, {
+        petId,
+        petName: pet?.name || "",
+        error: "Please complete all required fields before submitting the adoption request.",
+        formData: buildAdoptFormData(req.body)
+      });
+    }
 
-  const newPet = {
-        userId,
-        username,
-        ownerName,
-        contact,
-        address,
-        email,
-        petName,
-        petBreed,
-        petSize,
-        petAge,
-        petHdbApproved,
-        reason,
-        details,
-        photo,
-        requestType: 'rehome',
-        status: 'pending'
-      }
-  
- 
-    await PetRequest.addPet(newPet);
-    
-      console.log('request submitted successfully!');
-      // return res.send('Request submitted successfully!');
-      return res.redirect('/appointment');
-  }catch (error){
+    await PetRequest.create({
+      userId,
+      username,
+      ownerName,
+      contact,
+      address,
+      email,
+      petName: pet.name,
+      petId: pet._id,
+      housing,
+      requestType: "adopt",
+      status: "pending"
+    });
+
+    res.redirect("/appointment");
+  } catch (error) {
     console.error(error);
-    return res.status(500).send("Error submitting give up request");
-  };
-  
+    res.status(500).send("Error submitting adoption request");
+  }
 };
 
-// UPDATE
-exports.updateAdoptionRequest = async (req, res) => {
-  const userId= req.body.userId;
-  const petId= req.body.petId;
-  const housing= req.body.housing;
-  const status= req.body.status;
-  
+exports.submitGiveUpRequest = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const username = (req.body.username || "").trim();
+    const ownerName = (req.body.ownerName || "").trim();
+    const contact = normalizeContact(req.body.contact || "");
+    const address = (req.body.address || "").trim();
+    const email = (req.body.email || "").trim();
+    const petName = (req.body.petName || "").trim();
+    const petBreed = (req.body.petBreed || "").trim();
+    const petSize = (req.body.petSize || "").trim().toUpperCase();
+    const petAge = (req.body.petAge || "").trim();
+    const normalizedApproval = (req.body.petHdbApproved || "").trim().toLowerCase();
+    const petHdbApproved = normalizedApproval === "yes" ? "Yes" : normalizedApproval === "no" ? "No" : "";
+    const reason = (req.body.reason || "").trim();
+    const details = (req.body.details || "").trim();
+    const photo = (req.body.photo || "").trim();
+    const numericPetAge = Number(petAge);
 
-  if (status !== "pending") {
-      console.log("Request already processed, cannot update");
-      return;
-    };
-  try{
-    await PetRequest.updateOne({userId, petId}, {housing});
+    if (!userId || !ownerName || !contact || !email || !address || !petName || !petBreed || !petSize || !petAge || !petHdbApproved) {
+      return renderGiveUpPage(res, {
+        error: "Please complete all required fields before submitting the give-up request.",
+        formData: buildGiveUpFormData({
+          ...req.body,
+          petSize,
+          petHdbApproved: petHdbApproved || req.body.petHdbApproved
+        })
+      });
+    }
 
-    res.send('Adoption request successfully updated!');
-    
+    if (!["S", "M", "L"].includes(petSize)) {
+      return renderGiveUpPage(res, {
+        error: "Pet size must be S, M, or L.",
+        formData: buildGiveUpFormData({
+          ...req.body,
+          petSize,
+          petHdbApproved
+        })
+      });
+    }
 
-  }catch (error){
+    if (!Number.isFinite(numericPetAge) || numericPetAge < 0) {
+      return renderGiveUpPage(res, {
+        error: "Pet age must be a valid non-negative number.",
+        formData: buildGiveUpFormData({
+          ...req.body,
+          petSize,
+          petHdbApproved
+        })
+      });
+    }
+
+    await PetRequest.create({
+      userId,
+      username,
+      ownerName,
+      contact,
+      address,
+      email,
+      petName,
+      petBreed,
+      petSize,
+      petAge: numericPetAge,
+      petHdbApproved,
+      reason,
+      details,
+      photo,
+      requestType: "rehome",
+      status: "pending"
+    });
+
+    res.redirect("/appointment");
+  } catch (error) {
     console.error(error);
-    return res.status(500).send("Error updating adoption request");
-  };
+    res.status(500).send("Error submitting give up request");
+  }
+};
 
+exports.updateAdoptionRequest = async (req, res) => {
+  const requestId = req.body.id;
+  const housing = req.body.housing === "others"
+    ? (req.body.housingOther || "").trim()
+    : (req.body.housing || "").trim();
 
+  if (!requestId || !housing) {
+    return renderManageAdoptPage(res, {
+      message: ["Please load a request and provide a housing value before updating."]
+    });
+  }
+
+  try {
+    const request = await PetRequest.findOne({
+      _id: requestId,
+      userId: req.session.userId,
+      requestType: "adopt"
+    }).lean();
+
+    if (!request) {
+      return renderManageAdoptPage(res, {
+        message: ["Adoption request not found."]
+      });
+    }
+
+    if (request.status !== "pending") {
+      return renderManageAdoptPage(res, {
+        existing: request,
+        message: ["Only pending requests can be updated."]
+      });
+    }
+
+    await PetRequest.updateOne({ _id: requestId }, { housing });
+    const updated = await PetRequest.findById(requestId).lean();
+
+    renderManageAdoptPage(res, {
+      existing: updated,
+      success: "Adoption request updated successfully."
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating adoption request");
+  }
 };
 
 exports.updateGiveUpRequest = async (req, res) => {
+  const requestId = req.body.id;
+  const petName = (req.body.petName || "").trim();
+  const petBreed = (req.body.petBreed || "").trim();
+  const petSize = (req.body.petSize || "").trim();
+  const petAge = (req.body.petAge || "").trim();
+  const petHdbApproved = (req.body.petHdbApproved || "").trim();
+  const reason = (req.body.reason || "").trim();
+  const details = (req.body.details || "").trim();
+  const photo = (req.body.photo || "").trim();
 
-  const userId= req.body.userId;
-  const petId= req.body.petId;
-  const petName= req.body.petName;
-  const petBreed= req.body.petBreed;
-  const petSize= req.body.petSize;
-  const petAge= req.body.petAge;
-  const petHdbApproved= req.body.petHdbApproved;
-  const reason= req.body.reason;
-  const details= req.body.details;
-  const photo= req.body.photo;
-  const status= req.body.status
+  const message = [];
 
-
-  let message = [];
-  let success = "";
-
-  if (!petName) {
-    message.push("Please input a pet name.");
-  }
-
-  if (!petBreed) {
-    message.push("Please input a pet breed.");
-  }
-
-  if (!petSize) {
-    message.push("Please input a pet size.");
-  }
-
-  if (!petAge) {
-    message.push("Please input a pet age.");
-  }
-
-  if (!petHdbApproved) {
-    message.push("Please specify if the pet is HDB approved.");
-  }
-  
-  if (!reason) {
-    message.push("Please input a reason.");
-  } 
-
-  if (!details) { 
-    message.push("Please input some details.");
-  }
-
+  if (!requestId) message.push("Please load a request before updating.");
+  if (!petName) message.push("Please input a pet name.");
+  if (!petBreed) message.push("Please input a pet breed.");
+  if (!petSize) message.push("Please input a pet size.");
+  if (!petAge) message.push("Please input a pet age.");
+  if (!petHdbApproved) message.push("Please specify if the pet is HDB approved.");
+  if (!reason) message.push("Please input a reason.");
+  if (!details) message.push("Please input some details.");
 
   if (message.length > 0) {
-      return res.render("appointment/manage-rehome-request", { contact, message, success, existing: null });
+    return renderManageRehomePage(res, { message });
   }
 
-  if (status !== "pending") {
-      console.log("Request already processed, cannot update");
-      return;
-    };
-  try{
-    // await PetRequest.updateOne({userId: req.body.userId, petId: req.body.petId},
-    //                             {petName: req.body.petName}, {petBreed: req.body.petBreed}, 
-    //                             {petSize: req.body.petSize}, {petAge: req.body.petAge}, 
-    //                             {petHdbApproved: req.body.petHdbApproved}, {reason: req.body.reason}, 
-    //                             {details: req.body.details}, {photo: req.body.photo});
-      await PetRequest.updateOne({ userId, petId },
-                                  {
-                                    petName,
-                                    petBreed,
-                                    petSize,
-                                    petAge,
-                                    petHdbApproved,
-                                    reason,
-                                    details,
-                                    photo
-                                  }
-  );
-    res.send('Give up request successfully updated!');
+  try {
+    const request = await PetRequest.findOne({
+      _id: requestId,
+      userId: req.session.userId,
+      requestType: "rehome"
+    }).lean();
 
-  }catch (error){
+    if (!request) {
+      return renderManageRehomePage(res, {
+        message: ["Give-up request not found."]
+      });
+    }
+
+    if (request.status !== "pending") {
+      return renderManageRehomePage(res, {
+        existing: request,
+        message: ["Only pending requests can be updated."]
+      });
+    }
+
+    await PetRequest.updateOne(
+      { _id: requestId },
+      {
+        petName,
+        petBreed,
+        petSize,
+        petAge: Number(petAge),
+        petHdbApproved,
+        reason,
+        details,
+        photo
+      }
+    );
+
+    const updated = await PetRequest.findById(requestId).lean();
+    renderManageRehomePage(res, {
+      existing: updated,
+      success: "Give-up request updated successfully."
+    });
+  } catch (error) {
     console.error(error);
-    return res.status(500).send("Error updating give up request");
-  };
-};  
+    res.status(500).send("Error updating give up request");
+  }
+};
 
-// DELETE
 exports.deleteAdoptionRequest = async (req, res) => {
-  const petId= req.body.petId;
-  const userId= req.body.userId; 
-  const status= req.body.status;
+  const requestId = req.body.id;
 
-  let message = [];
-  let success = "";
-  if (status !== "pending") {
-    console.log("Request already processed, cannot delete");
-    return;
-  };
-  if (!petId){
-    message.push("Please input a pet ID.");
-    return res.render('form/manage-adopt-request', { petId, message, success, existing: null });
+  if (!requestId) {
+    return renderManageAdoptPage(res, {
+      message: ["Please load a request before deleting."]
+    });
   }
 
-  try{
-    await PetRequest.deleteOne({userId: req.body.userId, petId: req.body.petId});
-    res.send("Adoption request deleted!");
-  }catch (error){
+  try {
+    const request = await PetRequest.findOne({
+      _id: requestId,
+      userId: req.session.userId,
+      requestType: "adopt"
+    }).lean();
+
+    if (!request) {
+      return renderManageAdoptPage(res, {
+        message: ["Adoption request not found."]
+      });
+    }
+
+    if (request.status !== "pending") {
+      return renderManageAdoptPage(res, {
+        existing: request,
+        message: ["Only pending requests can be deleted."]
+      });
+    }
+
+    await PetRequest.deleteOne({ _id: requestId });
+    renderManageAdoptPage(res, {
+      success: "Adoption request deleted successfully."
+    });
+  } catch (error) {
     console.error(error);
     res.status(500).send("Error deleting adoption request");
-  };
+  }
 };
 
 exports.deleteGiveUpRequest = async (req, res) => {
-  const petId= req.body.petId;
-  const userId= req.body.userId; 
-  const status= req.body.status;
+  const requestId = req.body.id;
 
-  let message = [];
-  let success = "";
-  if (status !== "pending") {
-    console.log("Request already processed, cannot delete");
-    return;
-  };
-  if (!petId){
-    message.push("Please input a pet ID.");
-    return res.render('form/manage-rehome-request', { petId, message, success, existing: null });
+  if (!requestId) {
+    return renderManageRehomePage(res, {
+      message: ["Please load a request before deleting."]
+    });
   }
 
-  try{
-    await PetRequest.deleteOne({userId: req.body.userId, petId: req.body.petId});
-    res.send("Give up request deleted!");
-  }catch (error){
+  try {
+    const request = await PetRequest.findOne({
+      _id: requestId,
+      userId: req.session.userId,
+      requestType: "rehome"
+    }).lean();
+
+    if (!request) {
+      return renderManageRehomePage(res, {
+        message: ["Give-up request not found."]
+      });
+    }
+
+    if (request.status !== "pending") {
+      return renderManageRehomePage(res, {
+        existing: request,
+        message: ["Only pending requests can be deleted."]
+      });
+    }
+
+    await PetRequest.deleteOne({ _id: requestId });
+    renderManageRehomePage(res, {
+      success: "Give-up request deleted successfully."
+    });
+  } catch (error) {
     console.error(error);
     res.status(500).send("Error deleting give up request");
-  };
-  };
-
+  }
+};

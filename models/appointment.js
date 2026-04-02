@@ -1,5 +1,4 @@
 const mongoose = require('mongoose'); // from server.js
-const { type } = require('os');
 
 const appointmentSchema = new mongoose.Schema({
     name: {
@@ -36,8 +35,11 @@ exports.findByContact = function(contact) {
 exports.addAppointment = function(newAppointment) {
     return Appointment.create(newAppointment);
 };
-exports.editAppointment = function(contact, date, time) {
-    return Appointment.updateOne({ contact:contact }, { date:date, time:time });
+exports.editAppointment = function(contact, date, time, appointmentType) {
+    return Appointment.updateOne(
+        { contact: contact },
+        { date: date, time: time, appointmentType: appointmentType }
+    );
 };
 exports.deleteAppointment = function(contact) {
     return Appointment.deleteOne({ contact:contact });

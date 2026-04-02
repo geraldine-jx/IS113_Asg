@@ -8,6 +8,7 @@ const session = require("express-session");
 
 const authRoutes = require("./routes/authRoutes");
 const homeRoutes = require("./routes/homeRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const formPageRoutes = require("./routes/formPageRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 
@@ -49,6 +50,7 @@ mongoose.connect(process.env.MONGODB_URI)
 server.use("/", authRoutes);
 server.use("/", formPageRoutes);
 server.use("/home-display", homeRoutes);
+server.use("/home-display", adminRoutes);
 server.use("/", appointmentRoutes);
 
 server.listen(port, hostname, () => {
