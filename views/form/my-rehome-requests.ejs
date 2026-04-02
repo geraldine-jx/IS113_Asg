@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>List of Give Up Requests</title>
+    </head>
+    <body>
+        <h1>List of Give Up Requests</h1>
+
+        <% if (success) { %>
+            <p><%= success %></p>
+        <% } %>
+
+        <% if (!giveupList || giveupList.length === 0) { %>
+            <p>No give up requests yet.</p>
+        <% } else { %>
+            <% giveupList.forEach(a => { %>
+                <p>Pet Name: <%= a.petName %></p>
+                <p>Pet Breed: <%= a.petBreed %></p>
+                <p>Pet Size: <%= a.petSize %></p>
+                <p>Pet Age: <%= a.petAge %></p>
+                <p>Pet HDB Approved: <%= a.petHdbApproved %></p>
+                <p>Reason: <%= a.reason %></p>
+                <p>Details: <%= a.details %></p>    
+                <p>Photo: <%= a.photo %></p>
+                <p>Status: <%= a.status %></p>
+
+                <hr>
+            <% }) %>
+        <% } %>
+
+        <br>
+        <a href="/manage-rehome-request">Manage Give Up Request</a>
+        <br><br>
+        <a href="/give-up-dog">Back to Give Up Pet Form</a>
+    </body>
+</html>

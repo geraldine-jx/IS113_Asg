@@ -1,32 +1,28 @@
 <html>
     <head>
-        <title>List of Appointments</title>
+        <title>Display Appointments</title>
     </head>
     <body>
+        <h1>Display Appointments</h1>
+
         <% if (success) { %>
             <p><%= success %></p>
         <% } %>
-        <% if (appointmentList.length === 0) { %>
+
+        <% if (!appointmentList || appointmentList.length === 0) { %>
             <p>No appointment yet.</p>
         <% } else { %>
             <% appointmentList.forEach(a => { %>
-                <p><strong>Name: <%= a.name %></strong></p>
-                Contact: <%= a.contact %><br>
-                Date: <%= a.date %><br>
-                Time: <%= a.time %><br><br>
-                <form action="/updateappointment" method="post">
-                    <input type="hidden" name="contact" value="<%= a.contact %>">
-                    Updated Date: <input type="text" name="date">
-                    Updated Time: <input type="text" name="time">
-                    <button type="submit">Update</button>
-                </form>
-
-                <form action="/deleteappointment" method="post">
-                    <input type="hidden" name="contact" value="<%= a.contact %>">
-                    <button type="submit">Delete</button>
-                </form>
+                <p>Name: <%= a.name %></p>
+                <p>Contact: <%= a.contact %></p>
+                <p>Date: <%= a.date %></p>
+                <p>Time: <%= a.time %></p>
+                <p>Appointment Type: <%= a.appointmentType %></p>
                 <hr>
             <% }) %>
         <% } %>
+
+        <br>
+        <a href="/appointment">Back to Main Page</a>
     </body>
 </html>

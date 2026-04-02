@@ -1,14 +1,11 @@
 const express = require("express");
-const path = require("path");
-
 const router = express.Router();
+const formController = require("../controllers/formController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-router.get("/give-up-dog", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/form/give-up-dog.html"));
-});
+router.get("/adopt-dog", authMiddleware.requireLogin, formController.showAdoptDogPage);
+router.get("/give-up-dog", authMiddleware.requireLogin, formController.showGiveUpDogPage);
+router.post("/adopt-dog", authMiddleware.requireLogin, formController.submitAdoptionRequest);
+router.post("/give-up-dog", authMiddleware.requireLogin, formController.submitGiveUpRequest);
 
-router.get("/adopt-dog", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/form/adopt-dog.html"));
-});
-
-module.exports = router;
+module.exports = router;    

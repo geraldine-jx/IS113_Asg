@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <title>My Appointment</title>
+    </head>
+    <body>
+        <h1>View My Appointment</h1>
+
+        <form action="/myappointment" method="post">
+            Contact Number:
+            <input type="text" name="contact">
+            <button type="submit">Search</button>
+        </form>
+
+        <br>
+
+        <% if (message && message.length > 0) { %>
+            <ul>
+                <% message.forEach(m => { %>
+                    <li><%= m %></li>
+                <% }) %>
+            </ul>
+        <% } %>
+
+        <% if (appointment) { %>
+            <h2>Your Appointment</h2>
+            <p>Name: <%= appointment.name %></p>
+            <p>Contact: <%= appointment.contact %></p>
+            <p>Date: <%= appointment.date %></p>
+            <p>Time: <%= appointment.time %></p>
+            <p>Appointment Type: <%= appointment.appointmentType %></p>
+        <% } %>
+
+        <br>
+        <a href="/appointment">Back to Main Page</a>
+    </body>
+</html>

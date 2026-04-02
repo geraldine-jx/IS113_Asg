@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Review Adoption Requests</title>
+</head>
+<body>
+  <h1>Admin Review Adoption Requests</h1>
+
+  <a href="/home-display/admin/adoptions/create">
+    <button type="button">Create Adoption Request</button>
+  </a>
+
+  <a href="/home-display/admin/adoptions/approved">
+    <button type="button">View Approved Requests</button>
+  </a>
+
+  <br><br>
+
+  <% if (error) { %><p><%= error %></p><% } %>
+  <% if (message) { %><p><%= message %></p><% } %>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Submission ID</th>
+        <th>Owner Name</th>
+        <th>Pet Name</th>
+        <th>Contact</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Actions</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (submissions.length === 0) { %>
+        <tr><td colspan="8">No adoption submissions found.</td></tr>
+      <% } %>
+
+      <% submissions.forEach((submission) => { %>
+        <tr>
+          <td><%= submission._id %></td>
+          <td><%= submission.ownerName || "-" %></td>
+          <td><%= submission.petName || "-" %></td>
+          <td><%= submission.contact %></td>
+          <td><%= submission.email %></td>
+          <td><%= submission.status %></td>
+          <td>
+            <% if (submission.status === "pending") { %>
+              <form action="/home-display/admin/adoptions/approve" method="POST">
+                <input type="hidden" name="id" value="<%= submission._id %>">
+                <button type="submit">Approve</button>
+              </form>
+              <form action="/home-display/admin/adoptions/reject" method="POST">
+                <input type="hidden" name="id" value="<%= submission._id %>">
+                <button type="submit">Reject</button>
+              </form>
+            <% } else { %>
+              -
+            <% } %>
+            <form action="/home-display/admin/adoptions/delete" method="POST"
+                  onsubmit="return confirm('Delete this adoption request?');">
+              <input type="hidden" name="id" value="<%= submission._id %>">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+          <td>
+            <a href="/home-display/admin/adoptions/details?id=<%= submission._id %>">View</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <br>
+  <a href="/auth/admin/dashboard"><button type="button">Back to Dashboard</button></a>
+</body>
+</html>

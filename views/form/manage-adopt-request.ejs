@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <title>Manage Adopt Requests</title>
+    </head>
+    <body>
+        <h1>Manage Adopt Requests</h1>
+
+        <h2>Find Adopt Request</h2>
+        <form action="/manage-adopt-request" method="post">
+            Contact Number:
+            <input type="text" name="contact">
+            <button type="submit">Find</button>
+        </form>
+
+        <% if (message && message.length > 0) { %>
+            <ul>
+                <% message.forEach(m => { %>
+                    <li><%= m %></li>
+                <% }) %>
+            </ul>
+        <% } %>
+
+        <% if (success) { %>
+            <p><%= success %></p>
+        <% } %>
+
+        <hr>
+
+        <% if (existing) { %>
+            <h3>Current Adopt Request</h3>
+            <p>Pet Name: <strong><%= existing.petName || "-" %></strong></p>
+            <p>Contact: <strong><%= existing.contact %></strong></p>
+            <p>Housing: <strong><%= existing.housing || "-" %></strong></p>
+            <p>Status: <strong><%= existing.status %></strong></p>
+
+            <h2>Change Adopt Request</h2>
+            <form action="/update-adoption-request" method="post">
+                <input type="hidden" name="id" value="<%= existing._id %>">
+
+                New Housing:
+                <input type="text" name="housing" value="<%= existing.housing || '' %>">
+                <br><br>
+
+                <button type="submit">Update Adopt Request</button>
+            </form>
+
+            <hr>
+
+            <h2>Delete Adopt Request</h2>
+            <form action="/delete-adopt-request" method="post" onsubmit="return confirmDelete()">
+                <input type="hidden" name="id" value="<%= existing._id %>">
+                <button type="submit">Delete Adopt Request</button>
+            </form>
+        <% } %>
+
+        <script>
+            function confirmDelete() {
+                return confirm("Are you sure you want to delete this adopt request?");
+            }
+        </script>
+
+        <br>
+        <a href="/my-adopt-requests">Back to Adopt Requests List</a>
+    </body>
+</html>

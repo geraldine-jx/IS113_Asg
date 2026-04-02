@@ -10,13 +10,20 @@ const petRequestSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Pet"
     },
+    appointmentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Appointment"
+    },
+    username: {
+        type: String
+    },
     ownerName: {
         type: String
     },
     requestType: {
         type: String,
         enum: ["adopt", "rehome"],
-        required: true
+        required: true,
     },
     petName: {
         type: String
@@ -32,7 +39,7 @@ const petRequestSchema = new mongoose.Schema({
     },
     petHdbApproved: {
         type: String,
-        enum: ['Yes','No']
+        enum: ['Yes','No', 'yes', 'no', 'na']
     },
     photo: {
         type:String
@@ -44,6 +51,9 @@ const petRequestSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true
+    },
+    housing: {
+        type: String
     },
     address: {
         type: String,
@@ -72,20 +82,4 @@ const petRequestSchema = new mongoose.Schema({
 });
 
 const PetRequest = mongoose.model("PetRequest", petRequestSchema);
-
-exports.findById = function(petId) {
-    return PetRequest.findOne({petId: petId});
-};
-
-exports.addPet = function(){
-    return PetRequest.create();
-};
-
-exports.findByIdAndUpdate = function(userId, petId) {
-    return PetRequest.updateOne({userId: userId}, {petId: petId});
-};
-
-exports.findByIdAndDelete = function(userId, petId) {
-    return PetRequest.deleteOne({userId: userId, petId: petId});
-};
 module.exports = PetRequest;

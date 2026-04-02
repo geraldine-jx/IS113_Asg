@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <title>To Adopt</title>
+    </head>
+    <body>
+        <h1>Adoption Form</h1>
+        <% if (error) { %>
+            <p><%= error %></p>
+        <% } %>
+        <h2>Contact Information</h2>
+        <form action="/adopt-dog" method="post">
+            <input type="hidden" name="userId" id="userId" value="" />
+            <input type="hidden" name="petId" value="<%= petId %>">
+            <!-- autofilled-->
+            Username: <input type="text" name="username" id="username" readonly required>
+            <br><br>
+            Full Name: <input type="text" name="ownerName" id="ownerName" readonly required>
+            <br><br>
+            Contact Number: <input type="text" name="contact" id="contact" readonly required>
+            <br><br>
+            Address: <input type="text" name="address" id="address" readonly required>
+            <br><br>
+            Email: <input type="email" name="email" id="email" readonly required>
+            <br><br>
+
+        <h2>Family & Housing</h2>
+
+            What type of housing do you reside in? 
+            <br><br>
+            <input type="radio" name="housing" value="hdb"> HDB
+            <input type="radio" name="housing" value="condo"> Condominium
+            <input type="radio" name="housing" value="landed"> Landed Property
+            <br><br>
+            <input type="radio" name="housing" value="others"> Others (Please specify)
+            <label for='others'></label>
+            <input type="text" name="housingOther" value="<%= formData.housingOther || '' %>">
+
+            <br><br>
+        <h2>Selected Pet</h2>
+            Dog Name: <input type="text" name="petName" value="<%= petName %>" readonly>
+            <br><br>
+
+            <button type="submit">Submit</button>
+            <br><br><br>
+
+            <a href='/manage-adopt-request'>
+                <button type="button">Manage Adopt Requests</button>
+            </a>
+            <br><br>
+            <a href="/my-adopt-requests">
+                <button type="button">View My Adopt Requests</button>
+            </a>    
+            <br><br>
+            <a href="/home-display">
+                <button type="button">Back to Home Page</button>
+            </a>
+        </form>
+
+         <script>
+            document.addEventListener("DOMContentLoaded", async () => {
+                try {
+                    const response = await fetch("/user-details");
+                    if (!response.ok) {
+                        throw new Error("Unable to load user details");
+                    }
+                    const user = await response.json();
+
+                    // Autofill user details
+                    document.getElementById("username").value = user.username;
+                    document.getElementById("userId").value = user._id;
+                    document.getElementById("ownerName").value = user.displayName;
+                    document.getElementById("contact").value = user.contact;
+                    document.getElementById("email").value = user.email;
+                    document.getElementById("address").value = user.address;
+                    const savedHousing = "<%= formData.housing || '' %>";
+                    if (savedHousing) {
+                        const selected = document.querySelector(`input[name="housing"][value="${savedHousing}"]`);
+                        if (selected) {
+                            selected.checked = true;
+                        } else {
+                            const others = document.querySelector('input[name="housing"][value="others"]');
+                            if (others) {
+                                others.checked = true;
+                            }
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Failed to load user details:", error);
+                }
+            });
+        </script>
+
+        
+        
+
+    </body>
+</html>
