@@ -1,6 +1,123 @@
 const PetRequest = require("../models/petRequest");
 const Pet = require("../models/pet");
 const Appointment = require("../models/appointment");
+const Favourite = require("../models/favourite");
+
+const escapeCsv = (value) => {
+  const stringValue = value == null ? "" : String(value);
+  return `"${stringValue.replace(/"/g, '""')}"`;
+};
+
+const calculateAnalytics = ({ pets, favourites, adoptionRequests }) => {
+  // Track pets by id so favourite and adoption records can be mapped back to a breed/name.
+  const petById = new Map();
+  // Track demand metrics at the breed level for cards, insights, and breed charts.
+  const breedStatsMap = new Map();
+  // Track demand metrics at the individual pet level for "most applied pets".
+  const petDemandMap = new Map();
+
+  const ensureBreedStats = (breed) => {
+    const normalizedBreed = (breed || "Unknown").trim() || "Unknown";
+    if (!breedStatsMap.has(normalizedBreed)) {
+      breedStatsMap.set(normalizedBreed, {
+        breed: normalizedBreed,
+        favourites: 0,
+        views: 0,
+        applications: 0,
+        approved: 0
+      });
+    }
+    return breedStatsMap.get(normalizedBreed);
+  };
+
+  pets.forEach((pet) => {
+    petById.set(String(pet._id), pet);
+    ensureBreedStats(pet.breed);
+  });
+
+  // Favourite records are the source of "most favourited breeds" and total view counts.
+  // Each favourite stores the pet id plus a viewCount counter.
+  favourites.forEach((favourite) => {
+    const pet = petById.get(String(favourite.pet));
+    const breedStats = ensureBreedStats(pet?.breed);
+    breedStats.favourites += 1;
+    breedStats.views += Number(favourite.viewCount || 0);
+  });
+
+  // Adoption requests are the source of "most applied pets" and adoption success rate.
+  // We only pass in requestType = "adopt" records when calling this helper.
+  adoptionRequests.forEach((request) => {
+    const pet = request.petId ? petById.get(String(request.petId)) : null;
+    const breed = pet?.breed || request.petBreed || "Unknown";
+    const petLabel = pet?.name || request.petName || "Unknown Pet";
+    const petKey = request.petId ? String(request.petId) : `${petLabel}:${breed}`;
+
+    const breedStats = ensureBreedStats(breed);
+    breedStats.applications += 1;
+
+    if (request.status === "approved") {
+      breedStats.approved += 1;
+    }
+
+    if (!petDemandMap.has(petKey)) {
+      petDemandMap.set(petKey, {
+        petKey,
+        petName: petLabel,
+        breed: breed || "Unknown",
+        applications: 0,
+        approved: 0
+      });
+    }
+
+    const petDemand = petDemandMap.get(petKey);
+    petDemand.applications += 1;
+
+    if (request.status === "approved") {
+      petDemand.approved += 1;
+    }
+  });
+
+  const breedStats = Array.from(breedStatsMap.values())
+    .map((item) => ({
+      ...item,
+      adoptionRate: item.applications > 0 ? (item.approved / item.applications) * 100 : 0
+    }))
+    .sort((a, b) => b.favourites - a.favourites || b.views - a.views || a.breed.localeCompare(b.breed));
+
+  const petDemandStats = Array.from(petDemandMap.values())
+    .sort((a, b) => b.applications - a.applications || a.petName.localeCompare(b.petName));
+
+  const totalApplications = adoptionRequests.length;
+  const totalApproved = adoptionRequests.filter((request) => request.status === "approved").length;
+  const totalFavourites = favourites.length;
+  const totalViews = favourites.reduce((sum, favourite) => sum + Number(favourite.viewCount || 0), 0);
+  // Success rate = approved adoption requests / all adoption requests.
+  const adoptionSuccessRate = totalApplications > 0 ? (totalApproved / totalApplications) * 100 : 0;
+
+  const topFavouritedBreed = breedStats[0] || null;
+  const topViewedBreed = [...breedStats].sort((a, b) => b.views - a.views || a.breed.localeCompare(b.breed))[0] || null;
+  const bestAdoptionBreed = breedStats
+    .filter((breed) => breed.applications > 0)
+    .sort((a, b) => b.adoptionRate - a.adoptionRate || b.approved - a.approved || a.breed.localeCompare(b.breed))[0] || null;
+
+  return {
+    summary: {
+      totalPets: pets.length,
+      totalFavourites,
+      totalViews,
+      totalApplications,
+      totalApproved,
+      adoptionSuccessRate
+    },
+    insights: {
+      topFavouritedBreed,
+      topViewedBreed,
+      bestAdoptionBreed
+    },
+    breedStats,
+    petDemandStats
+  };
+};
 
 const buildCreateFormData = (body = {}) => ({
   ownerName: (body.ownerName || "").trim(),
@@ -531,5 +648,83 @@ exports.deleteAdoption = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send("Unable to delete submission");
+  }
+};
+
+exports.showAnalyticsDashboard = async (req, res) => {
+  try {
+    // Fetch the three collections that drive the analytics page:
+    // 1. Pet: source of pet names and breeds
+    // 2. Favourite: source of favourites + view counters
+    // 3. PetRequest (adopt only): source of application volume + approval outcomes
+    const [pets, favourites, adoptionRequests] = await Promise.all([
+      Pet.find().select("name breed status").lean(),
+      Favourite.find().select("pet viewCount").lean(),
+      PetRequest.find({ requestType: "adopt" }).select("petId petName petBreed status").lean()
+    ]);
+
+    const analytics = calculateAnalytics({ pets, favourites, adoptionRequests });
+
+    res.render("admin/admin-analytics", analytics);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Unable to load analytics dashboard");
+  }
+};
+
+exports.downloadAnalyticsCsv = async (req, res) => {
+  try {
+    // Export uses the same aggregation path as the dashboard so CSV numbers
+    // stay aligned with the cards/charts shown in the UI.
+    const [pets, favourites, adoptionRequests] = await Promise.all([
+      Pet.find().select("name breed status").lean(),
+      Favourite.find().select("pet viewCount").lean(),
+      PetRequest.find({ requestType: "adopt" }).select("petId petName petBreed status").lean()
+    ]);
+
+    const analytics = calculateAnalytics({ pets, favourites, adoptionRequests });
+
+    const lines = [
+      "section,metric,value",
+      ["summary", "total_pets", analytics.summary.totalPets],
+      ["summary", "total_favourites", analytics.summary.totalFavourites],
+      ["summary", "total_views", analytics.summary.totalViews],
+      ["summary", "total_adoption_applications", analytics.summary.totalApplications],
+      ["summary", "total_approved_adoptions", analytics.summary.totalApproved],
+      ["summary", "adoption_success_rate_percent", analytics.summary.adoptionSuccessRate.toFixed(2)]
+    ].map((row) => Array.isArray(row) ? row.map(escapeCsv).join(",") : row);
+
+    lines.push("");
+    lines.push(["breed", "breed", "favourites", "views", "applications", "approved", "adoption_rate_percent"].map(escapeCsv).join(","));
+    analytics.breedStats.forEach((breed) => {
+      lines.push([
+        "breed",
+        breed.breed,
+        breed.favourites,
+        breed.views,
+        breed.applications,
+        breed.approved,
+        breed.adoptionRate.toFixed(2)
+      ].map(escapeCsv).join(","));
+    });
+
+    lines.push("");
+    lines.push(["pet", "pet_name", "breed", "applications", "approved"].map(escapeCsv).join(","));
+    analytics.petDemandStats.forEach((petDemand) => {
+      lines.push([
+        "pet",
+        petDemand.petName,
+        petDemand.breed,
+        petDemand.applications,
+        petDemand.approved
+      ].map(escapeCsv).join(","));
+    });
+
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition", 'attachment; filename="pet-demand-analytics.csv"');
+    res.send(lines.join("\n"));
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Unable to export analytics CSV");
   }
 };
