@@ -1,9 +1,9 @@
 <html>
     <head>
-        <title>List of Appointments</title>
+        <title>Display Appointments</title>
     </head>
     <body>
-        <h1>List of Appointments</h1>
+        <h1>Display Appointments</h1>
 
         <% if (success) { %>
             <p><%= success %></p>
@@ -13,10 +13,11 @@
             <p>No appointment yet.</p>
         <% } else { %>
             <% appointmentList.forEach(a => { %>
-                <p><strong>Name: <%= a.name %></strong></p>
+                <p>Name: <%= a.name %></p>
                 <p>Contact: <%= a.contact %></p>
                 <p>Date: <%= a.date %></p>
                 <p>Time: <%= a.time %></p>
+                <p>Appointment Type: <%= a.appointmentType %></p>
                 <hr>
             <% }) %>
         <% } %>

@@ -17,6 +17,11 @@ const appointmentSchema = new mongoose.Schema({
     time: {
         type: String,
         required: [true, 'An appointment must have a time']
+    },
+    appointmentType: {
+        type: String,
+        required: [true, 'An appointment must have a type'],
+        enum: ['Adopt', 'Give Up']
     }
 });
 

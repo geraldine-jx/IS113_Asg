@@ -29,6 +29,14 @@
             </select>
             <br><br>
 
+            Appointment Type:
+            <select name="appointmentType">
+                <option value="">-- Select Type --</option>
+                <option value="Adopt" <%= type === "Adopt" ? "selected" : "" %>>Adopt</option>
+                <option value="Give Up" <%= type === "Give Up" ? "selected" : "" %>>Give Up</option>
+            </select>
+            <br><br>
+
             <button type="submit">Confirm Appointment</button>
         </form>
 

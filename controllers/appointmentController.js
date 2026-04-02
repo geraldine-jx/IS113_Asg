@@ -13,7 +13,7 @@ const times = {
 
 exports.displayForm = (req, res) => {
     const time = Object.values(times);
-    res.render('appointment/appointment', { name: '', contact: '', date: '', time, selectedTime: '', message: [], success: '' });
+    res.render('appointment/appointment', { name: '', contact: '', date: '', time, selectedTime: '', type: '', message: [], success: '' });
 };
 
 exports.createAppointment = async (req, res) => {
@@ -22,6 +22,8 @@ exports.createAppointment = async (req, res) => {
     const date = req.body.date;
     const time = Object.values(times);
     const selectedTime = req.body.time;
+    const appointmentType = req.body.appointmentType;
+
     let message = [];
     let success = "";
 
@@ -30,9 +32,9 @@ exports.createAppointment = async (req, res) => {
     }
 
     if (!contact) {
-    message.push("Please input a contact.");
+        message.push("Please input a contact.");
     } else if (!(contact.length === 8 && (contact.startsWith("8") || contact.startsWith("9")))) {
-    message.push("Please input a Singapore-based number.");
+        message.push("Please input a Singapore-based number.");
     }
 
     if (!date) {
@@ -43,15 +45,20 @@ exports.createAppointment = async (req, res) => {
         message.push("Please select a time.");
     }
 
+    if (!appointmentType) {
+        message.push("Please select an appointment type.");
+    }
+
     if (message.length > 0) {
-        return res.render('appointment/appointment', { name, contact, date, time, selectedTime, message, success });
+        return res.render('appointment/appointment', { name, contact, date, time, selectedTime, type: appointmentType, message, success });
     }
 
     const newAppointment = {
         name,
         contact,
         date,
-        time: selectedTime
+        time: selectedTime,
+        appointmentType
     };
 
     try {
@@ -59,7 +66,7 @@ exports.createAppointment = async (req, res) => {
         success = "Appointment confirmed!";
         console.log(success);
 
-        return res.render("appointment/appointment", { name: '', contact: '', date: '', time, selectedTime: '', message: [], success });
+        return res.render("appointment/appointment", { name: '', contact: '', date: '', time, selectedTime: '', type: '', message: [], success });
     } catch (error) {
         console.error(error);
         return res.send("Error adding appointment");
@@ -68,7 +75,7 @@ exports.createAppointment = async (req, res) => {
 
 exports.showManageAppointment = async (req, res) => {
     const time = Object.values(times);
-    res.render("appointment/manageappointment", { time, message: [], success: '', existing: null});
+    res.render("appointment/manageappointment", { time, message: [], success: '', existing: null });
 };
 
 exports.loadAppointmentForUpdate = async (req, res) => {
@@ -79,9 +86,7 @@ exports.loadAppointmentForUpdate = async (req, res) => {
 
     if (!contactNo) {
         message.push("Please input a contact number.");
-        return res.render("appointment/manageappointment", {
-            time, message, success, existing: null
-        });
+        return res.render("appointment/manageappointment", { time, message, success, existing: null });
     }
 
     try {
@@ -89,9 +94,7 @@ exports.loadAppointmentForUpdate = async (req, res) => {
 
         if (!existing) {
             message.push("Appointment not found.");
-            return res.render("appointment/manageappointment", {
-                time, message, success, existing: null
-            });
+            return res.render("appointment/manageappointment", { time, message, success, existing: null });
         }
 
         return res.render("appointment/manageappointment", { time, message: [], success: '', existing });
@@ -102,9 +105,10 @@ exports.loadAppointmentForUpdate = async (req, res) => {
 };
 
 exports.updateAppointment = async (req, res) => {
-    const contactNo = req.body.contact;
+    const contactNo = req.body.contact ? req.body.contact.replaceAll(" ", "") : "";
     const newDate = req.body.date;
     const newTime = req.body.time;
+    const appointmentType = req.body.appointmentType;
     const time = Object.values(times);
 
     let message = [];
@@ -122,12 +126,16 @@ exports.updateAppointment = async (req, res) => {
         message.push("Please select a new time.");
     }
 
+    if (!appointmentType) {
+        message.push("Please select an appointment type.");
+    }
+
     if (message.length > 0) {
-        return res.render("appointment/manageappointment", { time, message, success, existing: null });
+        return res.render("appointment/manageappointment", { time, message, success, existing: { contact: contactNo, date: newDate, time: newTime, appointmentType: appointmentType } });
     }
 
     try {
-        let result = await Appointment.editAppointment(contactNo, newDate, newTime);
+        let result = await Appointment.editAppointment(contactNo, newDate, newTime, appointmentType);
         console.log(result);
 
         if (result.modifiedCount === 1) {
@@ -144,7 +152,7 @@ exports.updateAppointment = async (req, res) => {
 };
 
 exports.deleteAnAppointment = async (req, res) => {
-    const contactNo = req.body.contact;
+    const contactNo = req.body.contact ? req.body.contact.replaceAll(" ", "") : "";
     const time = Object.values(times);
 
     let message = [];
