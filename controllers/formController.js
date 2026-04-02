@@ -284,7 +284,7 @@ exports.submitGiveUpRequest = async (req, res) => {
       });
     }
 
-    await PetRequest.create({
+    req.session.pendingGiveUpRequest = {
       userId,
       username,
       ownerName,
@@ -301,7 +301,7 @@ exports.submitGiveUpRequest = async (req, res) => {
       photo,
       requestType: "rehome",
       status: "pending"
-    });
+    };
 
     res.redirect("/appointment");
   } catch (error) {

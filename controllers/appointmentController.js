@@ -1,4 +1,5 @@
 const Appointment = require('./../models/appointment');
+const PetRequest = require('./../models/petRequest');
 
 const times = {
     '10': '10:00',
@@ -11,18 +12,32 @@ const times = {
     '17': '17:00'
 };
 
+const buildAppointmentViewModel = (req, overrides = {}) => {
+    const pendingGiveUpRequest = req.session.pendingGiveUpRequest || null;
+
+    return {
+        name: overrides.name ?? pendingGiveUpRequest?.ownerName ?? "",
+        contact: overrides.contact ?? pendingGiveUpRequest?.contact ?? "",
+        date: overrides.date ?? "",
+        time: Object.values(times),
+        selectedTime: overrides.selectedTime ?? "",
+        type: overrides.type ?? (pendingGiveUpRequest ? "Give Up" : ""),
+        message: overrides.message ?? (pendingGiveUpRequest ? ["Confirm this appointment to submit your give-up request."] : []),
+        success: overrides.success ?? ""
+    };
+};
+
 exports.displayForm = (req, res) => {
-    const time = Object.values(times);
-    res.render('appointment/appointment', { name: '', contact: '', date: '', time, selectedTime: '', type: '', message: [], success: '' });
+    res.render('appointment/appointment', buildAppointmentViewModel(req));
 };
 
 exports.createAppointment = async (req, res) => {
     const name = req.body.name;
     const contact = req.body.contact ? req.body.contact.replaceAll(" ", "") : "";
     const date = req.body.date;
-    const time = Object.values(times);
     const selectedTime = req.body.time;
     const appointmentType = req.body.appointmentType;
+    const pendingGiveUpRequest = req.session.pendingGiveUpRequest || null;
 
     let message = [];
     let success = "";
@@ -49,8 +64,20 @@ exports.createAppointment = async (req, res) => {
         message.push("Please select an appointment type.");
     }
 
+    if (pendingGiveUpRequest && appointmentType && appointmentType !== "Give Up") {
+        message.push("Please select 'Give Up' to confirm your rehome request.");
+    }
+
     if (message.length > 0) {
-        return res.render('appointment/appointment', { name, contact, date, time, selectedTime, type: appointmentType, message, success });
+        return res.render('appointment/appointment', buildAppointmentViewModel(req, {
+            name,
+            contact,
+            date,
+            selectedTime,
+            type: appointmentType,
+            message,
+            success
+        }));
     }
 
     const newAppointment = {
@@ -62,11 +89,32 @@ exports.createAppointment = async (req, res) => {
     };
 
     try {
-        await Appointment.addAppointment(newAppointment);
-        success = "Appointment confirmed!";
+        const createdAppointment = await Appointment.addAppointment(newAppointment);
+
+        if (pendingGiveUpRequest && appointmentType === "Give Up") {
+            try {
+                await PetRequest.create(pendingGiveUpRequest);
+                delete req.session.pendingGiveUpRequest;
+                success = "Appointment confirmed and give-up request submitted!";
+            } catch (requestError) {
+                await Appointment.deleteAppointmentById(createdAppointment._id);
+                throw requestError;
+            }
+        } else {
+            success = "Appointment confirmed!";
+        }
+
         console.log(success);
 
-        return res.render("appointment/appointment", { name: '', contact: '', date: '', time, selectedTime: '', type: '', message: [], success });
+        return res.render("appointment/appointment", buildAppointmentViewModel(req, {
+            name: '',
+            contact: '',
+            date: '',
+            selectedTime: '',
+            type: '',
+            message: [],
+            success
+        }));
     } catch (error) {
         console.error(error);
         return res.send("Error adding appointment");

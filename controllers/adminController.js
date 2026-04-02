@@ -270,6 +270,10 @@ exports.deleteGiveUp = async (req, res) => {
       return res.status(404).send("Submission not found");
     }
 
+    if (deletedSubmission.petId) {
+      await Pet.findByIdAndDelete(deletedSubmission.petId);
+    }
+
     res.redirect("/home-display/admin/giveups");
   } catch (err) {
     console.log(err);

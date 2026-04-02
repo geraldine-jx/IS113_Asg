@@ -44,3 +44,6 @@ exports.editAppointment = function(contact, date, time, appointmentType) {
 exports.deleteAppointment = function(contact) {
     return Appointment.deleteOne({ contact:contact });
 };
+exports.deleteAppointmentById = function(id) {
+    return Appointment.deleteOne({ _id: id });
+};
