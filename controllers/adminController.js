@@ -1,6 +1,5 @@
 const PetRequest = require("../models/petRequest");
 const Pet = require("../models/pet");
-const Appointment = require("../models/appointment");
 const Favourite = require("../models/favourite");
 
 const escapeCsv = (value) => {
@@ -331,14 +330,6 @@ exports.rejectGiveUp = async (req, res) => {
     submission.adminRemarks = getAdminRemarks(req.body);
     await submission.save();
 
-    if (submission.appointmentId) {
-      await Appointment.deleteAppointmentById(submission.appointmentId);
-    }
-
-    if (submission.contact) {
-      await Appointment.deleteAppointmentsByContactAndType(submission.contact, "Give Up");
-    }
-
     res.redirect("/home-display/admin/giveups");
   } catch (err) {
     console.log(err);
@@ -394,14 +385,6 @@ exports.deleteGiveUp = async (req, res) => {
 
     if (!deletedSubmission) {
       return res.status(404).send("Submission not found");
-    }
-
-    if (deletedSubmission.appointmentId) {
-      await Appointment.deleteAppointmentById(deletedSubmission.appointmentId);
-    }
-
-    if (deletedSubmission.contact) {
-      await Appointment.deleteAppointmentsByContactAndType(deletedSubmission.contact, "Give Up");
     }
 
     if (deletedSubmission.petId) {

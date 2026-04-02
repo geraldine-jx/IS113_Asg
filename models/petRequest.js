@@ -10,10 +10,6 @@ const petRequestSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Pet"
     },
-    appointmentId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Appointment"
-    },
     username: {
         type: String
     },
