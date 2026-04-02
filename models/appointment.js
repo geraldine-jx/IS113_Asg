@@ -47,3 +47,6 @@ exports.deleteAppointment = function(contact) {
 exports.deleteAppointmentById = function(id) {
     return Appointment.deleteOne({ _id: id });
 };
+exports.deleteAppointmentByContactAndType = function(contact, appointmentType) {
+    return Appointment.deleteOne({ contact: contact, appointmentType: appointmentType });
+};

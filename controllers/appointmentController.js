@@ -93,6 +93,7 @@ exports.createAppointment = async (req, res) => {
 
         if (pendingGiveUpRequest && appointmentType === "Give Up") {
             try {
+                pendingGiveUpRequest.appointmentId = createdAppointment._id;
                 await PetRequest.create(pendingGiveUpRequest);
                 delete req.session.pendingGiveUpRequest;
                 success = "Appointment confirmed and give-up request submitted!";

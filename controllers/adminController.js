@@ -1,5 +1,6 @@
 const PetRequest = require("../models/petRequest");
 const Pet = require("../models/pet");
+const Appointment = require("../models/appointment");
 
 const buildCreateFormData = (body = {}) => ({
   ownerName: (body.ownerName || "").trim(),
@@ -213,6 +214,12 @@ exports.rejectGiveUp = async (req, res) => {
     submission.adminRemarks = getAdminRemarks(req.body);
     await submission.save();
 
+    if (submission.appointmentId) {
+      await Appointment.deleteAppointmentById(submission.appointmentId);
+    } else if (submission.contact) {
+      await Appointment.deleteAppointmentByContactAndType(submission.contact, "Give Up");
+    }
+
     res.redirect("/home-display/admin/giveups");
   } catch (err) {
     console.log(err);
@@ -268,6 +275,12 @@ exports.deleteGiveUp = async (req, res) => {
 
     if (!deletedSubmission) {
       return res.status(404).send("Submission not found");
+    }
+
+    if (deletedSubmission.appointmentId) {
+      await Appointment.deleteAppointmentById(deletedSubmission.appointmentId);
+    } else if (deletedSubmission.contact) {
+      await Appointment.deleteAppointmentByContactAndType(deletedSubmission.contact, "Give Up");
     }
 
     if (deletedSubmission.petId) {
