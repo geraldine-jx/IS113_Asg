@@ -216,8 +216,10 @@ exports.rejectGiveUp = async (req, res) => {
 
     if (submission.appointmentId) {
       await Appointment.deleteAppointmentById(submission.appointmentId);
-    } else if (submission.contact) {
-      await Appointment.deleteAppointmentByContactAndType(submission.contact, "Give Up");
+    }
+
+    if (submission.contact) {
+      await Appointment.deleteAppointmentsByContactAndType(submission.contact, "Give Up");
     }
 
     res.redirect("/home-display/admin/giveups");
@@ -279,8 +281,10 @@ exports.deleteGiveUp = async (req, res) => {
 
     if (deletedSubmission.appointmentId) {
       await Appointment.deleteAppointmentById(deletedSubmission.appointmentId);
-    } else if (deletedSubmission.contact) {
-      await Appointment.deleteAppointmentByContactAndType(deletedSubmission.contact, "Give Up");
+    }
+
+    if (deletedSubmission.contact) {
+      await Appointment.deleteAppointmentsByContactAndType(deletedSubmission.contact, "Give Up");
     }
 
     if (deletedSubmission.petId) {

@@ -50,3 +50,6 @@ exports.deleteAppointmentById = function(id) {
 exports.deleteAppointmentByContactAndType = function(contact, appointmentType) {
     return Appointment.deleteOne({ contact: contact, appointmentType: appointmentType });
 };
+exports.deleteAppointmentsByContactAndType = function(contact, appointmentType) {
+    return Appointment.deleteMany({ contact: contact, appointmentType: appointmentType });
+};
