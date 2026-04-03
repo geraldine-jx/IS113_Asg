@@ -89,18 +89,12 @@ exports.createAppointment = async (req, res) => {
     };
 
     try {
-        const createdAppointment = await Appointment.addAppointment(newAppointment);
+        await Appointment.addAppointment(newAppointment);
 
         if (pendingGiveUpRequest && appointmentType === "Give Up") {
-            try {
-                pendingGiveUpRequest.appointmentId = createdAppointment._id;
-                await PetRequest.create(pendingGiveUpRequest);
-                delete req.session.pendingGiveUpRequest;
-                success = "Appointment confirmed and give-up request submitted!";
-            } catch (requestError) {
-                await Appointment.deleteAppointmentById(createdAppointment._id);
-                throw requestError;
-            }
+            await PetRequest.create(pendingGiveUpRequest);
+            delete req.session.pendingGiveUpRequest;
+            success = "Appointment confirmed and give-up request submitted!";
         } else {
             success = "Appointment confirmed!";
         }

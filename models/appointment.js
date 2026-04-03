@@ -44,12 +44,3 @@ exports.editAppointment = function(contact, date, time, appointmentType) {
 exports.deleteAppointment = function(contact) {
     return Appointment.deleteOne({ contact:contact });
 };
-exports.deleteAppointmentById = function(id) {
-    return Appointment.deleteOne({ _id: id });
-};
-exports.deleteAppointmentByContactAndType = function(contact, appointmentType) {
-    return Appointment.deleteOne({ contact: contact, appointmentType: appointmentType });
-};
-exports.deleteAppointmentsByContactAndType = function(contact, appointmentType) {
-    return Appointment.deleteMany({ contact: contact, appointmentType: appointmentType });
-};

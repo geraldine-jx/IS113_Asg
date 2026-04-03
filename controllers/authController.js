@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const path = require("path");
 const User = require("../models/user");
 
 const Employee = require("../models/employees");
@@ -89,7 +88,7 @@ const renderAdminUsersPage = async (res, options = {}) => {
 };
 
 exports.showMainPage = (req, res) => {
-    res.sendFile(path.join(__dirname, "../views/user/mainpage.html"));
+    res.redirect("/index.html");
 };
 
 exports.showLoginPage = (req, res) => {
