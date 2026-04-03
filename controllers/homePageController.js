@@ -62,12 +62,8 @@ exports.getAllPets = async (req, res) => {
     
     const recommendedPet = await getTopFavouritePet(favourites);
 
-    res.render("pet/home-display", {
-      pets: sortedPets,
-      favourites: favouritePetIds,
-      recommendedPet
-    });
-
+    res.render("pet/home-display", {pets: sortedPets,favourites: favouritePetIds,recommendedPet}
+    );
   } catch (err) {
     console.error(err);
     res.send("Error loading pets");
@@ -111,12 +107,8 @@ exports.getPetDetails = async (req, res) => {
         }
     }
 
-    res.render("pet/pet-details", {
-      pet,
-      favourites,
-      viewCount
-    });
-
+    res.render("pet/pet-details", {pet,favourites,viewCount}
+    );
   } catch (err) {
     console.error(err);
     res.send("Error loading pet details");
