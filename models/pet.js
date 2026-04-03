@@ -44,7 +44,7 @@ const petSchema = new mongoose.Schema({
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Employee"
     }
 }, {
     timestamps: true

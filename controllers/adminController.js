@@ -191,7 +191,7 @@ exports.createGiveUp = async (req, res) => {
 
   try {
     await PetRequest.create({
-      userId: req.session.userId,
+      createdByAdmin: req.session.userId,
       ownerName: formData.ownerName,
       requestType: "rehome",
       petName: formData.petName,
@@ -222,6 +222,7 @@ exports.showGiveUps = async (req, res) => {
   try {
     const submissions = await PetRequest.find({ requestType: "rehome" })
       .populate("userId", "username displayName email")
+      .populate("createdByAdmin", "username displayName email")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -244,6 +245,7 @@ exports.showGiveUpDetails = async (req, res) => {
       requestType: "rehome"
     })
       .populate("userId", "username displayName email contact address")
+      .populate("createdByAdmin", "username displayName email")
       .populate("approvedBy", "username displayName")
       .lean();
 
@@ -451,7 +453,7 @@ exports.createAdoption = async (req, res) => {
 
   try {
     await PetRequest.create({
-      userId:      req.session.userId,
+      createdByAdmin: req.session.userId,
       ownerName:   formData.ownerName,
       requestType: "adopt",
       petName:     formData.petName,
@@ -479,6 +481,7 @@ exports.showAdoptions = async (req, res) => {
   try {
     const submissions = await PetRequest.find({ requestType: "adopt" })
       .populate("userId", "username displayName email")
+      .populate("createdByAdmin", "username displayName email")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -501,6 +504,7 @@ exports.showAdoptionDetails = async (req, res) => {
       requestType: "adopt"
     })
       .populate("userId", "username displayName email contact address")
+      .populate("createdByAdmin", "username displayName email")
       .populate("approvedBy", "username displayName")
       .lean();
 
@@ -523,6 +527,7 @@ exports.showApprovedAdoptions = async (req, res) => {
       status: "approved" 
     })
       .populate("userId", "username displayName email")
+      .populate("createdByAdmin", "username displayName email")
       .populate("approvedBy", "username displayName")
       .sort({ createdAt: -1 })
       .lean();

@@ -19,9 +19,10 @@
   <p><strong>Address:</strong> <%= submission.address %></p>
   <p><strong>Description:</strong> <%= submission.details || "-" %></p>
   <p><strong>Admin Remarks:</strong> <%= submission.adminRemarks || "-" %></p>
-  <p><strong>Owner Username:</strong> <%= submission.userId?.username || "-" %></p>
-  <p><strong>Owner Display Name:</strong> <%= submission.userId?.displayName || "-" %></p>
-  <p><strong>Submitted By Account Email:</strong> <%= submission.userId?.email || "-" %></p>
+  <p><strong>Linked User Account Username:</strong> <%= submission.userId?.username || "-" %></p>
+  <p><strong>Linked User Account Display Name:</strong> <%= submission.userId?.displayName || "-" %></p>
+  <p><strong>Linked User Account Email:</strong> <%= submission.userId?.email || "-" %></p>
+  <p><strong>Created By Admin:</strong> <%= submission.createdByAdmin?.displayName || submission.createdByAdmin?.username || "-" %></p>
   <p><strong>Reviewed By:</strong> <%= submission.approvedBy?.displayName || submission.approvedBy?.username || "-" %></p>
   <p><strong>Created Listing ID:</strong> <%= submission.petId || "-" %></p>
 
