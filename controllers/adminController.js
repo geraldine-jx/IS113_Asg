@@ -8,6 +8,8 @@ const escapeCsv = (value) => {
   return `"${stringValue.replace(/"/g, '""')}"`;
 };
 
+//UPDATED CODES FOR ANALYTICS
+
 const calculateAnalytics = ({ pets, favourites, adoptionRequests }) => {
   // Track pets by id so favourite and adoption records can be mapped back to a breed/name.
   const petById = new Map();
@@ -118,6 +120,8 @@ const calculateAnalytics = ({ pets, favourites, adoptionRequests }) => {
     petDemandStats
   };
 };
+
+
 
 const buildCreateFormData = (body = {}) => ({
   ownerName: (body.ownerName || "").trim(),
@@ -650,6 +654,9 @@ exports.deleteAdoption = async (req, res) => {
     res.status(500).send("Unable to delete submission");
   }
 };
+
+
+//UPDATED CODES FOR ANALYTICS
 
 exports.showAnalyticsDashboard = async (req, res) => {
   try {
