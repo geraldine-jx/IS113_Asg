@@ -3,12 +3,15 @@ const mongoose = require("mongoose");
 const petRequestSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+        ref: "User"
     },
     petId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Pet"
+    },
+    createdByAdmin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Employee"
     },
     username: {
         type: String
@@ -68,7 +71,7 @@ const petRequestSchema = new mongoose.Schema({
     },
     approvedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Employee"
     },
     adminRemarks: {
         type: String
