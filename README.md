@@ -43,7 +43,7 @@ Environment: Node.js
 **Project Structure**
 pet-adoption-platform/
 ├── controllers/
-│   └── adminController.js
+│   ├── adminController.js
 │   ├── appointmentController.js
 │   ├── authController.js
 │   ├── formController.js
@@ -52,17 +52,17 @@ pet-adoption-platform/
 ├── middleware/
 │   └── authMiddleware.js
 ├── models/
-│   └── appointment.js
+│   ├── appointment.js
 │   ├── employees.js
 │   ├── favourite.js
 │   ├── pet.js
 │   ├── petRequest.js
 │   └── user.js
-├── node_modules
+├── node_modules/
 ├── public/
 │   └── index.html
 ├── routes/
-│   └── adminRoutes.js
+│   ├── adminRoutes.js
 │   ├── appointmentRoutes.js
 │   ├── authRoutes.js
 │   ├── formPage.js
@@ -70,13 +70,13 @@ pet-adoption-platform/
 │   └── homeRoutes.js
 ├── views/
 │   ├── user/
-│   │   └── forgot-password-user.ejs
+│   │   ├── forgot-password-user.ejs
 │   │   ├── login-admin.ejs
 │   │   ├── login-user.ejs
 │   │   ├── profile.ejs
 │   │   └── register-user.ejs
 │   ├── admin/
-│   │   └── admin-adoption-create.ejs
+│   │   ├── admin-adoption-create.ejs
 │   │   ├── admin-adoption-details.ejs
 │   │   ├── admin-adoption.ejs
 │   │   ├── admin-analytics.ejs
@@ -86,21 +86,21 @@ pet-adoption-platform/
 │   │   ├── adoption-listings.ejs
 │   │   ├── giveup-create.ejs
 │   │   ├── giveup-details.ejs
-│   │   ├── giveups.ejs
+│   │   └── giveups.ejs
 │   ├── pet/
-│   │  ├── home-display.ejs
-│        ├── pet-details.ejs
+│   │   ├── home-display.ejs
+│   │   └── pet-details.ejs
 │   ├── appointment/
-│   │   └── appointment.ejs
+│   │   ├── appointment.ejs
 │   │   ├── findappointment.ejs
-│   │  └── manageappointment.ejs
-├── form/
-│   │   └── adopt-dog.ejs
-│   │   ├── give-up-dog.ejs
-│   │   ├── manage-adopt-request.ejs
-│   │   ├── manage-rehome-request.ejs
-│   │   ├── my-adopt-requests.ejs
-│   │   └── my-rehome-requests.ejs
+│   │   └── manageappointment.ejs
+│   └── form/
+│       ├── adopt-dog.ejs
+│       ├── give-up-dog.ejs
+│       ├── manage-adopt-request.ejs
+│       ├── manage-rehome-request.ejs
+│       ├── my-adopt-requests.ejs
+│       └── my-rehome-requests.ejs
 ├── server.js
 ├── package.json
 ├── package-lock.json
