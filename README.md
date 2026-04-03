@@ -205,25 +205,31 @@ Handle invalid IDs
 Clear success and error messages
 
 
-**Installation**
-**Clone the repository**
+**7) INSTALLATION**
+Link to Git: https://github.com/geraldine-jx/IS113_Asg
+
+Clone the repository
 git clone <repository-url>
-cd or navigate to repository
+cd <repository-folder>
+
+Review the README
+Refer to the README.md file in the project directory for an overview of the project structure, features, and setup instructions before running the application.
 
 Install dependencies
-npm install
+npm install nodemon express mongoose ejs express-session bcrypt dotenv
 
 Set up MongoDB
-Use MongoDB Atlas or local MongoDB
+Use MongoDB Atlas or a local MongoDB instance.
 
-Add your connection string in .env
+Create a .env file in the root directory and add your connection string:
 MONGODB_URI=your_mongodb_connection_string
 
 Start the application
 nodemon server.js
 
 Open your browser
-http://127.0.0.1:8000
+http://127.0.0.1:8000/index.html
+
 
 **Usage**
 **For Users**
@@ -317,7 +323,6 @@ contact: String
 address: String
 bio: String
 dateJoined: Date
-
 
 **Notes**
 Admin registration is restricted to employee IDs stored in the employees collection
