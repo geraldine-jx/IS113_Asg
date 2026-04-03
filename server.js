@@ -34,17 +34,6 @@ server.use(session({
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log("MongoDB error:", err));
-// mongoose.connect(process.env.MONGODB_URI)
-//   .then(() => {
-//     console.log("MongoDB connected");
-
-//     server.listen(port, hostname, () => {
-//       console.log(`Server running at http://${hostname}:${port}/`);
-//     });
-//   })
-//   .catch(err => {
-//     console.log("MongoDB error:", err);
-//   });
 
 // Routes
 server.use("/", authRoutes);

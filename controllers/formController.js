@@ -203,15 +203,15 @@ exports.submitAdoptionRequest = async (req, res) => {
     const pet = petId ? await Pet.findById(petId).lean() : null;
 
     if (!userId || !pet || !contact || !address || !email || !housing) {
-      return renderAdoptPage(res, {
-        petId,
-        petName: pet?.name || "",
+        return renderAdoptPage(res, {
+            petId,
+            petName: pet?.name || "",
         error: "Please complete all required fields before submitting the adoption request.",
         formData: buildAdoptFormData(req.body)
-      });
+        });
     }
 
-    await PetRequest.create({
+    req.session.pendingAdoptionRequest = {
       userId,
       username,
       ownerName,
@@ -223,7 +223,7 @@ exports.submitAdoptionRequest = async (req, res) => {
       housing,
       requestType: "adopt",
       status: "pending"
-    });
+    };
 
     res.redirect("/appointment");
   } catch (error) {

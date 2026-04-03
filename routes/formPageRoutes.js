@@ -1,7 +1,6 @@
 
 const express = require("express");
 const formController = require("../controllers/formController");
-const appointmentController = require("../controllers/appointmentController");  
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -14,8 +13,6 @@ router.get('/user-details', authMiddleware.requireLogin, formController.getUserD
 router.post("/adopt-dog", authMiddleware.requireLogin, formController.submitAdoptionRequest);
 router.post("/give-up-dog", authMiddleware.requireLogin, formController.submitGiveUpRequest);
 
-// Appointment page — shown after adoption form is submitted
-router.get("/appointment", appointmentController.displayForm);
 router.get('/manage-rehome-request', authMiddleware.requireLogin, formController.showManageRehomeRequestPage);
 router.post('/manage-rehome-request', authMiddleware.requireLogin, formController.showManageRehomeRequestPage);
 
@@ -32,4 +29,3 @@ router.post("/delete-adopt-request", authMiddleware.requireLogin, formController
 router.post("/delete-giveup-request", authMiddleware.requireLogin, formController.deleteGiveUpRequest);
 
 module.exports = router;
-

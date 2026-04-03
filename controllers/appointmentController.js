@@ -12,17 +12,42 @@ const times = {
     '17': '17:00'
 };
 
+const getPendingRequest = (req) => {
+    if (req.session.pendingAdoptionRequest) {
+        return {
+            data: req.session.pendingAdoptionRequest,
+            type: "Adopt",
+            successMessage: "Appointment confirmed and adoption request submitted!"
+        };
+    }
+
+    if (req.session.pendingGiveUpRequest) {
+        return {
+            data: req.session.pendingGiveUpRequest,
+            type: "Give Up",
+            successMessage: "Appointment confirmed and give-up request submitted!"
+        };
+    }
+
+    return null;
+};
+
+const clearPendingRequests = (req) => {
+    delete req.session.pendingAdoptionRequest;
+    delete req.session.pendingGiveUpRequest;
+};
+
 const buildAppointmentViewModel = (req, overrides = {}) => {
-    const pendingGiveUpRequest = req.session.pendingGiveUpRequest || null;
+    const pendingRequest = getPendingRequest(req);
 
     return {
-        name: overrides.name ?? pendingGiveUpRequest?.ownerName ?? "",
-        contact: overrides.contact ?? pendingGiveUpRequest?.contact ?? "",
+        name: overrides.name ?? pendingRequest?.data?.ownerName ?? "",
+        contact: overrides.contact ?? pendingRequest?.data?.contact ?? "",
         date: overrides.date ?? "",
         time: Object.values(times),
         selectedTime: overrides.selectedTime ?? "",
-        type: overrides.type ?? (pendingGiveUpRequest ? "Give Up" : ""),
-        message: overrides.message ?? (pendingGiveUpRequest ? ["Confirm this appointment to submit your give-up request."] : []),
+        type: overrides.type ?? (pendingRequest?.type || ""),
+        message: overrides.message ?? (pendingRequest ? [`Confirm this appointment to submit your ${pendingRequest.type === "Adopt" ? "adoption" : "give-up"} request.`] : []),
         success: overrides.success ?? ""
     };
 };
@@ -37,7 +62,7 @@ exports.createAppointment = async (req, res) => {
     const date = req.body.date;
     const selectedTime = req.body.time;
     const appointmentType = req.body.appointmentType;
-    const pendingGiveUpRequest = req.session.pendingGiveUpRequest || null;
+    const pendingRequest = getPendingRequest(req);
 
     let message = [];
     let success = "";
@@ -64,8 +89,8 @@ exports.createAppointment = async (req, res) => {
         message.push("Please select an appointment type.");
     }
 
-    if (pendingGiveUpRequest && appointmentType && appointmentType !== "Give Up") {
-        message.push("Please select 'Give Up' to confirm your rehome request.");
+    if (pendingRequest && appointmentType && appointmentType !== pendingRequest.type) {
+        message.push(`Please select '${pendingRequest.type}' to confirm your pending request.`);
     }
 
     if (message.length > 0) {
@@ -89,12 +114,15 @@ exports.createAppointment = async (req, res) => {
     };
 
     try {
-        await Appointment.create(newAppointment);
+        const appointment = await Appointment.create(newAppointment);
 
-        if (pendingGiveUpRequest && appointmentType === "Give Up") {
-            await PetRequest.create(pendingGiveUpRequest);
-            delete req.session.pendingGiveUpRequest;
-            success = "Appointment confirmed and give-up request submitted!";
+        if (pendingRequest && appointmentType === pendingRequest.type) {
+            await PetRequest.create({
+                ...pendingRequest.data,
+                appointmentId: appointment._id
+            });
+            clearPendingRequests(req);
+            success = pendingRequest.successMessage;
         } else {
             success = "Appointment confirmed!";
         }
