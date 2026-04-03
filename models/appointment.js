@@ -26,21 +26,4 @@ const appointmentSchema = new mongoose.Schema({
 
 const Appointment = mongoose.model('Appointment', appointmentSchema, 'appointments');
 
-exports.retrieveAll = function() {
-    return Appointment.find();
-};
-exports.findByContact = function(contact) {
-    return Appointment.findOne({ contact : contact });
-};
-exports.addAppointment = function(newAppointment) {
-    return Appointment.create(newAppointment);
-};
-exports.editAppointment = function(contact, date, time, appointmentType) {
-    return Appointment.updateOne(
-        { contact: contact },
-        { date: date, time: time, appointmentType: appointmentType }
-    );
-};
-exports.deleteAppointment = function(contact) {
-    return Appointment.deleteOne({ contact:contact });
-};
+module.exports = Appointment;

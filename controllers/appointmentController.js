@@ -89,7 +89,7 @@ exports.createAppointment = async (req, res) => {
     };
 
     try {
-        await Appointment.addAppointment(newAppointment);
+        await Appointment.create(newAppointment);
 
         if (pendingGiveUpRequest && appointmentType === "Give Up") {
             await PetRequest.create(pendingGiveUpRequest);
@@ -114,7 +114,7 @@ exports.createAppointment = async (req, res) => {
         console.error(error);
         return res.send("Error adding appointment");
     }
-};
+    };
 
 exports.showManageAppointment = async (req, res) => {
     const time = Object.values(times);
@@ -133,7 +133,7 @@ exports.loadAppointmentForUpdate = async (req, res) => {
     }
 
     try {
-        const existing = await Appointment.findByContact(contactNo);
+        const existing = await Appointment.findOne({ contact: contactNo });
 
         if (!existing) {
             message.push("Appointment not found.");
@@ -178,7 +178,10 @@ exports.updateAppointment = async (req, res) => {
     }
 
     try {
-        let result = await Appointment.editAppointment(contactNo, newDate, newTime, appointmentType);
+        let result = await Appointment.updateOne(
+            { contact: contactNo },
+            { date: newDate, time: newTime, appointmentType }
+        );
         console.log(result);
 
         if (result.modifiedCount === 1) {
@@ -207,7 +210,7 @@ exports.deleteAnAppointment = async (req, res) => {
     }
 
     try {
-        let result = await Appointment.deleteAppointment(contactNo);
+        let result = await Appointment.deleteOne({ contact: contactNo });
         console.log(result);
 
         if (result.deletedCount === 1) {
@@ -237,7 +240,7 @@ exports.showMyAppointmentResult = async (req, res) => {
     }
 
     try {
-        const appointment = await Appointment.findByContact(contactNo);
+        const appointment = await Appointment.findOne({ contact: contactNo });
 
         if (!appointment) {
             message.push("Appointment not found.");
