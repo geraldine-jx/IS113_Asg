@@ -12,8 +12,8 @@ const times = {
     '17': '17:00'
 };
 
-const getPendingRequest = (req) => {
-    if (req.session.pendingAdoptionRequest) {
+const getPendingRequest = (req) => { // checks if user has pending adoption or give up
+    if (req.session.pendingAdoptionRequest) { // returns the type of request
         return {
             data: req.session.pendingAdoptionRequest,
             type: "Adopt",
@@ -29,15 +29,15 @@ const getPendingRequest = (req) => {
         };
     }
 
-    return null;
+    return null; // if there is none
 };
 
-const clearPendingRequests = (req) => {
+const clearPendingRequests = (req) => { // deletes requests
     delete req.session.pendingAdoptionRequest;
     delete req.session.pendingGiveUpRequest;
 };
-
-const buildAppointmentViewModel = (req, overrides = {}) => {
+// builds the data object sent to the appointment form, will delete appt if admin rejects
+const buildAppointmentViewModel = (req, overrides = {}) => { 
     const pendingRequest = getPendingRequest(req);
 
     return {
@@ -52,11 +52,11 @@ const buildAppointmentViewModel = (req, overrides = {}) => {
     };
 };
 
-exports.displayForm = (req, res) => {
+exports.displayForm = (req, res) => { // displays blank appointment form
     res.render('appointment/appointment', buildAppointmentViewModel(req));
 };
 
-exports.createAppointment = async (req, res) => {
+exports.createAppointment = async (req, res) => { // creates an appointment, saves data into DB 
     const name = req.body.name;
     const contact = req.body.contact ? req.body.contact.replaceAll(" ", "") : "";
     const date = req.body.date;
@@ -93,7 +93,7 @@ exports.createAppointment = async (req, res) => {
         message.push(`Please select '${pendingRequest.type}' to confirm your pending request.`);
     }
 
-    if (message.length > 0) {
+    if (message.length > 0) { // validation step
         return res.render('appointment/appointment', buildAppointmentViewModel(req, {
             name,
             contact,
@@ -144,23 +144,23 @@ exports.createAppointment = async (req, res) => {
     }
     };
 
-exports.showManageAppointment = async (req, res) => {
+exports.showManageAppointment = async (req, res) => { // renders admin management page
     const time = Object.values(times);
     res.render("appointment/manageappointment", { time, message: [], success: '', existing: null });
 };
 
-exports.loadAppointmentForUpdate = async (req, res) => {
+exports.loadAppointmentForUpdate = async (req, res) => { // to update appt
     const contactNo = req.body.contact ? req.body.contact.replaceAll(" ", "") : "";
     const time = Object.values(times);
     let message = [];
     let success = "";
 
-    if (!contactNo) {
+    if (!contactNo) { // validation by contact number
         message.push("Please input a contact number.");
         return res.render("appointment/manageappointment", { time, message, success, existing: null });
     }
 
-    try {
+    try { // finding appt by contact number
         const existing = await Appointment.findOne({ contact: contactNo });
 
         if (!existing) {
@@ -175,7 +175,7 @@ exports.loadAppointmentForUpdate = async (req, res) => {
     }
 };
 
-exports.updateAppointment = async (req, res) => {
+exports.updateAppointment = async (req, res) => { // validates and applies changes to existing appt
     const contactNo = req.body.contact ? req.body.contact.replaceAll(" ", "") : "";
     const newDate = req.body.date;
     const newTime = req.body.time;
@@ -225,7 +225,7 @@ exports.updateAppointment = async (req, res) => {
     }
 };
 
-exports.deleteAnAppointment = async (req, res) => {
+exports.deleteAnAppointment = async (req, res) => { // deletes by contact
     const contactNo = req.body.contact ? req.body.contact.replaceAll(" ", "") : "";
     const time = Object.values(times);
 
@@ -254,11 +254,11 @@ exports.deleteAnAppointment = async (req, res) => {
     }
 };
 
-exports.showMyAppointmentForm = (req, res) => {
+exports.showMyAppointmentForm = (req, res) => { // renders the user-facing find my appointment form
     res.render("appointment/findappointment", { appointment: null, message: [] });
 };
 
-exports.showMyAppointmentResult = async (req, res) => {
+exports.showMyAppointmentResult = async (req, res) => { // looks up and display
     const contactNo = req.body.contact ? req.body.contact.replaceAll(" ", "") : "";
     let message = [];
 
