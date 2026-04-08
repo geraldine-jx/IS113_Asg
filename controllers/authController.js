@@ -1,7 +1,10 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
-
 const Employee = require("../models/employees");
+
+// User authentication
+
+// Authenticate a normal user and start a session.
 exports.loginUser = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -33,13 +36,12 @@ exports.loginUser = async (req, res) => {
     res.redirect("/home-display");
 };
 
+// Shared helpers
+
+// Map Mongo duplicate-key errors into simple UI messages.
 const getDuplicateFieldError = (error) => {
     if (error?.code !== 11000 || !error.keyPattern) {
         return null;
-    }
-
-    if (error.keyPattern.employeeID) {
-        return "EmployeeID already exists";
     }
 
     if (error.keyPattern.username) {
@@ -49,6 +51,7 @@ const getDuplicateFieldError = (error) => {
     return "A user with the same details already exists";
 };
 
+// Format dateJoined for console logs only.
 const formatDateJoinedForLog = (date) => {
     return date.toLocaleDateString("en-GB", {
         day: "numeric",
@@ -57,14 +60,17 @@ const formatDateJoinedForLog = (date) => {
     });
 };
 
+// Escape user input before building a regex search.
 const escapeRegExp = (value) => {
     return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 };
 
+// Build one shared HTML error string for missing form fields.
 const buildMissingFieldsError = (missingFields) => {
     return `Please fill in:<ul>${missingFields.join("")}</ul>`;
 };
 
+// Load and render the admin user list, with optional search and flash messages.
 const renderAdminUsersPage = async (res, options = {}) => {
     const search = options.search ? options.search.trim() : "";
     const filter = { usertype: "user" };
@@ -87,10 +93,14 @@ const renderAdminUsersPage = async (res, options = {}) => {
     });
 };
 
+// Public auth pages
+
+// Main landing page now points to the public index file.
 exports.showMainPage = (req, res) => {
     res.redirect("/index.html");
 };
 
+// Show the correct login page based on the requested user type.
 exports.showLoginPage = (req, res) => {
     const usertype = req.query.usertype;
 
@@ -103,6 +113,7 @@ exports.showLoginPage = (req, res) => {
     }
 };
 
+// Only normal users can self-register; admin registration is disabled.
 exports.showRegisterPage = (req, res) => {
     const usertype = req.query.usertype;
 
@@ -115,6 +126,9 @@ exports.showRegisterPage = (req, res) => {
     }
 };
 
+// User account actions
+
+// Validate, create, and save a new normal user account.
 exports.registerUser = async (req, res) => {
     const fields = {
         usertype: "user",
@@ -195,10 +209,12 @@ exports.registerUser = async (req, res) => {
     }
 };
 
+// Show the user password-reset form.
 exports.showForgotPasswordPage = (req, res) => {
     res.render("user/forgot-password-user", { error: null, message: null });
 };
 
+// Load the signed-in admin's name for the dashboard.
 exports.showAdminDashboardPage = async (req, res) => {
     const admin = await Employee.findOne({
         _id: req.session.userId
@@ -209,6 +225,7 @@ exports.showAdminDashboardPage = async (req, res) => {
     res.render("admin/admin-dashboard", { adminName });
 };
 
+// Reset a user's password after verifying username and email.
 exports.resetUserPassword = async (req, res) => {
     const fields = {
         username: req.body.username,
@@ -261,6 +278,9 @@ exports.resetUserPassword = async (req, res) => {
     res.render("user/login-user", { error: "Password updated successfully. Please sign in." });
 };
 
+// Admin authentication and admin user management
+
+// Authenticate an admin using the employees collection only.
 exports.loginAdmin = async (req, res) => {
     const employeeID = (req.body.employeeID || "").trim();
     const password = req.body.password || "";
@@ -313,12 +333,14 @@ exports.loginAdmin = async (req, res) => {
     res.redirect("/auth/admin/dashboard");
 };
 
+// Show the admin user-management page.
 exports.showAdminUsersPage = async (req, res) => {
     await renderAdminUsersPage(res, {
         search: req.query.search || ""
     });
 };
 
+// Delete one normal user from the admin user-management page.
 exports.deleteUser = async (req, res) => {
     const userId = req.body.userId;
     const search = req.body.search || "";
@@ -350,7 +372,7 @@ exports.deleteUser = async (req, res) => {
     });
 };
 
-
+// Destroy the session and return to the login entry point.
 exports.logout = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
