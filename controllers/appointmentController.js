@@ -13,7 +13,9 @@ const times = {
 };
 
 const getPendingRequest = (req) => { // checks if user has pending adoption or give up
-    if (req.session.pendingAdoptionRequest) { // returns the type of request
+    if (req.session.pendingAdoptionRequest) { // returns the request data, its type and success message 
+        // looks for req.session.pendingAdoptionRequest
+        // looks for req.session.pendingGiveUpRequest
         return {
             data: req.session.pendingAdoptionRequest,
             type: "Adopt",
@@ -32,15 +34,17 @@ const getPendingRequest = (req) => { // checks if user has pending adoption or g
     return null; // if there is none
 };
 
-const clearPendingRequests = (req) => { // deletes requests
+const clearPendingRequests = (req) => { // deletes requests after being processed
     delete req.session.pendingAdoptionRequest;
-    delete req.session.pendingGiveUpRequest;
+    delete req.session.pendingGiveUpRequest; // deletes pending request objects from session
 };
-// builds the data object sent to the appointment form, will delete appt if admin rejects
+// prepares data that gets passed into the appointment ejs page
+// first calls getPendingRequest(req) to see if there is a pending adoption/ give up request
 const buildAppointmentViewModel = (req, overrides = {}) => { 
     const pendingRequest = getPendingRequest(req);
 
-    return {
+    return { // overrides if u explicitly pass values in, those values take priority
+        // otherwise it falls back to session/ pending default
         name: overrides.name ?? pendingRequest?.data?.ownerName ?? "",
         contact: overrides.contact ?? pendingRequest?.data?.contact ?? "",
         date: overrides.date ?? "",
@@ -48,8 +52,8 @@ const buildAppointmentViewModel = (req, overrides = {}) => {
         selectedTime: overrides.selectedTime ?? "",
         type: overrides.type ?? (pendingRequest?.type || ""),
         message: overrides.message ?? (pendingRequest ? [`Confirm this appointment to submit your ${pendingRequest.type === "Adopt" ? "adoption" : "give-up"} request.`] : []),
-        success: overrides.success ?? ""
-    };
+        success: overrides.success ?? "" // once successful, it clears the boxes for next user
+    }; // puts back what u type, so no need type everything when u make a mistake
 };
 
 exports.displayForm = (req, res) => { // displays blank appointment form
