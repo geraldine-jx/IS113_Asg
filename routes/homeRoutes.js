@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const homePageController = require("../controllers/homePageController");
-
+// GET fetch data, POST for form
 // GET homepage (full URL: /home-display)
 router.get("/", homePageController.getAllPets);
 
@@ -12,4 +12,3 @@ router.post("/pets/:id/toggleFavourite", homePageController.toggleFavourite);
 router.get("/pets/:id",homePageController.getPetDetails)
 
 module.exports = router;
- 

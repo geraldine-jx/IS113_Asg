@@ -4,11 +4,9 @@ const userSchema = new mongoose.Schema({
     usertype: {
         type: String
     },
-
     employeeID: {
         type: String
     },
-
     username: {
         type: String,
         unique: true,
