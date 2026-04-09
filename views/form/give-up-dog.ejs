@@ -1,11 +1,14 @@
 <html>
     <head>
-        <title>Put Up For Adoption</title>
+        <title>Rehome Dog</title>
     </head>
     <body>
         <h1>Put Up For Adoption</h1>
+        <% if (error) { %>
+            <p><%= error %></p>
+        <% } %>
         <form action="/give-up-dog" method="post">
-            <input type="hidden" name="userId" id="userId" value='' />
+            <input type="hidden" name="userId" id="userId" value="" />
             Username: <input type="text" name="username" id="username" readonly required>
             <br><br>
             <!-- autofilled-->
@@ -18,42 +21,53 @@
             Email: <input type="email" name="email" id="email" readonly required>
             <br><br>
 
-            Name of Dog: <input type="text" name="petName" id="petName" required>
+            Name of Dog: <input type="text" name="petName" id="petName" value="<%= formData.petName || '' %>" required>
             <br><br>
-            Breed: <input type="text" name="petBreed" id="petBreed" required>
+            Breed: <input type="text" name="petBreed" id="petBreed" value="<%= formData.petBreed || '' %>" required>
             <br><br>
-            Size (S/M/L): <input type="text" name="petSize" id="petSize" required>
+            Size:
+            <select name="petSize" id="petSize" required>
+                <option value="">-- Select Size --</option>
+                <option value="S" <%= formData.petSize === "S" ? "selected" : "" %>>S</option>
+                <option value="M" <%= formData.petSize === "M" ? "selected" : "" %>>M</option>
+                <option value="L" <%= formData.petSize === "L" ? "selected" : "" %>>L</option>
+            </select>
             <br><br>
-            Age: <input type="text" name="petAge" id="petAge" required>
+            Age: <input type="number" min="0" name="petAge" id="petAge" value="<%= formData.petAge || '' %>" required>
             <br><br>
-            HDB approved (Yes/No): <input type="text" name="petHdbApproved" id="petHdbApproved" required>
+            HDB approved:
+            <select name="petHdbApproved" id="petHdbApproved" required>
+                <option value="No" <%= formData.petHdbApproved === "No" ? "selected" : "" %>>No</option>
+                <option value="Yes" <%= formData.petHdbApproved === "Yes" ? "selected" : "" %>>Yes</option>
+            </select>
             <br><br>
             Provide a short description of the dog: 
-            <br><textarea name="details" id="details" rows="5" cols="30"></textarea>
+            <br><textarea name="details" id="details" rows="5" cols="30"><%= formData.details || '' %></textarea>
             <br><br>
 
             Reason for giving up your dog:
-            <br><textarea name="reason" rows="5" cols="30"></textarea>
+            <br><textarea name="reason" rows="5" cols="30"><%= formData.reason || '' %></textarea>
             <br><br>
             
-            <input type="file" name="photo" value="photo" accept="image/*">
+            Photo URL:
+            <input type="text" name="photo" value="<%= formData.photo || '' %>">
             <br><br>
-            <button type="submit">Upload</button>
-            
             <button type="submit">Submit</button>
         </form>
         <br>
-        <a href="/home-display">
-        <button type="button">Back to Home Page</button>
-        </a>
+        <a href="/home-display">Back to Home Page</a>
 
         <script>
             document.addEventListener("DOMContentLoaded", async () => {
                 try {
                     const response = await fetch("/user-details");
+                    if (!response.ok) {
+                        throw new Error("Unable to load user details");
+                    }
                     const user = await response.json();
 
                     // Autofill user details
+                    document.getElementById("userId").value = user._id;
                     document.getElementById("username").value = user.username;
                     document.getElementById("ownerName").value = user.displayName;
                     document.getElementById("contact").value = user.contact;
@@ -69,18 +83,6 @@
 
         <br><br>
         <a href="/my-rehome-requests">View Give Up Pet Request List</a>
-
-        <!-- <% if (message && message.length > 0) { %> 
-            <ul>
-                <% message.forEach(m => { %>
-                    <li><%= m %></li>
-                <% }) %>
-            </ul>
-        <% } %>
-
-        <% if (success) { %>
-            <p><%= success %></p>
-        <% } %> -->
 
     </body>
 </html>

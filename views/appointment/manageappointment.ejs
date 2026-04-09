@@ -17,8 +17,9 @@
         <% if (existing) { %>
             <h3>Current Appointment</h3>
             <p>
-                Date: <strong><%= existing.date %></strong><br>
-                Time: <strong><%= existing.time %></strong>
+                Date: <%= existing.date %><br>
+                Time: <%= existing.time %><br>
+                Type: <%= existing.appointmentType %>
             </p>
 
             <h2>Change Appointment</h2>
@@ -37,6 +38,14 @@
                             <%= t %>
                         </option>
                     <% }) %>
+                </select>
+                <br><br>
+
+                Appointment Type:
+                <select name="appointmentType">
+                    <option value="">-- Select Type --</option>
+                    <option value="Adopt" <%= existing.appointmentType === "Adopt" ? "selected" : "" %>>Adopt</option>
+                    <option value="Give Up" <%= existing.appointmentType === "Give Up" ? "selected" : "" %>>Give Up</option>
                 </select>
                 <br><br>
 

@@ -1,35 +1,31 @@
 
 const express = require("express");
-//const path = require("path");
 const formController = require("../controllers/formController");
-const appointmentController = require("../controllers/appointmentController");  
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/give-up-dog", formController.showGiveUpDogPage);
-router.get("/adopt-dog", formController.showAdoptDogPage);
+router.get("/give-up-dog", authMiddleware.requireLogin, formController.showGiveUpDogPage);
+router.get("/adopt-dog", authMiddleware.requireLogin, formController.showAdoptDogPage);
 
-router.get('/user-details', formController.getUserDetails);
+router.get('/user-details', authMiddleware.requireLogin, formController.getUserDetails);
 
-router.post("/adopt-dog", formController.submitAdoptionRequest);
-router.post("/give-up-dog", formController.submitGiveUpRequest);
+router.post("/adopt-dog", authMiddleware.requireLogin, formController.submitAdoptionRequest);
+router.post("/give-up-dog", authMiddleware.requireLogin, formController.submitGiveUpRequest);
 
-// Appointment page — shown after adoption form is submitted
-router.get("/appointment", appointmentController.displayForm);
-router.get('/manage-rehome-request', formController.showManageRehomeRequestPage);
-router.post('/manage-rehome-request', formController.showManageRehomeRequestPage);
+router.get('/manage-rehome-request', authMiddleware.requireLogin, formController.showManageRehomeRequestPage);
+router.post('/manage-rehome-request', authMiddleware.requireLogin, formController.showManageRehomeRequestPage);
 
-router.get('/manage-adopt-request', formController.showManageAdoptRequestPage);
-router.post('/manage-adopt-request', formController.showManageAdoptRequestPage);
+router.get('/manage-adopt-request', authMiddleware.requireLogin, formController.showManageAdoptRequestPage);
+router.post('/manage-adopt-request', authMiddleware.requireLogin, formController.showManageAdoptRequestPage);
 
-router.get('/my-adopt-requests', formController.showMyAdoptRequests);
-router.get('/my-rehome-requests', formController.showMyRehomeRequests);
+router.get('/my-adopt-requests', authMiddleware.requireLogin, formController.showMyAdoptRequests);
+router.get('/my-rehome-requests', authMiddleware.requireLogin, formController.showMyRehomeRequests);
 
-router.post("/update-adoption-request", formController.updateAdoptionRequest);
-router.post("/update-give-up-request", formController.updateGiveUpRequest);
+router.post("/update-adoption-request", authMiddleware.requireLogin, formController.updateAdoptionRequest);
+router.post("/update-give-up-request", authMiddleware.requireLogin, formController.updateGiveUpRequest);
 
-router.post("/delete-adopt-request", formController.deleteAdoptionRequest);
-router.post("/delete-giveup-request", formController.deleteGiveUpRequest);
+router.post("/delete-adopt-request", authMiddleware.requireLogin, formController.deleteAdoptionRequest);
+router.post("/delete-giveup-request", authMiddleware.requireLogin, formController.deleteGiveUpRequest);
 
 module.exports = router;
-

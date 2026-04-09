@@ -3,12 +3,15 @@ const mongoose = require("mongoose");
 const petRequestSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+        ref: "User"
     },
     petId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Pet"
+    },
+    createdByAdmin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Employee"
     },
     username: {
         type: String
@@ -48,6 +51,9 @@ const petRequestSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    housing: {
+        type: String
+    },
     address: {
         type: String,
         required: true
@@ -65,7 +71,7 @@ const petRequestSchema = new mongoose.Schema({
     },
     approvedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Employee"
     },
     adminRemarks: {
         type: String
@@ -75,20 +81,4 @@ const petRequestSchema = new mongoose.Schema({
 });
 
 const PetRequest = mongoose.model("PetRequest", petRequestSchema);
-
-// exports.findById = function(petId) {
-//     return PetRequest.findOne({petId: petId});
-// };
-
-// exports.addPet = function(newPet){
-//     return PetRequest.create(newPet);
-// };
-
-// exports.findByIdAndUpdate = function(userId, petId, housing) {
-//     return PetRequest.updateOne({userId: userId, petId: petId}, {housing: housing});
-// };
-
-// exports.findByIdAndDelete = function(userId, petId) {
-//     return PetRequest.deleteOne({userId: userId, petId: petId});
-// };
 module.exports = PetRequest;

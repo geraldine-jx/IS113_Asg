@@ -13,9 +13,11 @@
   <p><strong>Contact:</strong> <%= submission.contact %></p>
   <p><strong>Email:</strong> <%= submission.email %></p>
   <p><strong>Address:</strong> <%= submission.address %></p>
+  <p><strong>Housing:</strong> <%= submission.housing || "-" %></p>
   <p><strong>Additional Details:</strong> <%= submission.details || "-" %></p>
-  <p><strong>Submitted By (Username):</strong> <%= submission.userId?.username || "-" %></p>
-  <p><strong>Submitted By (Display Name):</strong> <%= submission.userId?.displayName || "-" %></p>
+  <p><strong>Linked User Account Username:</strong> <%= submission.userId?.username || "-" %></p>
+  <p><strong>Linked User Account Display Name:</strong> <%= submission.userId?.displayName || "-" %></p>
+  <p><strong>Created By Admin:</strong> <%= submission.createdByAdmin?.displayName || submission.createdByAdmin?.username || "-" %></p>
   <p><strong>Reviewed By:</strong> <%= submission.approvedBy?.displayName || submission.approvedBy?.username || "-" %></p>
 
   <br>

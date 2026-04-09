@@ -24,11 +24,11 @@ async function incrementViewCount(userId, petId) {
   const fav = await Favourite.findOneAndUpdate(
     { user: userId, pet: petId },
     { $inc: { viewCount: 1 } },
-    { new: true }
+    { new: true } //return the updated document instead of the original one.
   );
   return fav;
 }
-
+ 
 //For reccomendation,get pet with top view count
 async function getTopFavouritePet(favDocs) {
   if (!favDocs || favDocs.length === 0) return null;
@@ -50,11 +50,13 @@ exports.getAllPets = async (req, res) => {
     if (!userId) return res.redirect("/");
 
     const favourites = await getUserFavourites(userId);
+    // creates a new array that contains only the pet IDs (as strings) from the favourites array.
     const favouritePetIds = favourites.map(f => f.pet.toString());
     const pets = await Pet.find();
-
+    // If > 0 → do sorting. If 0 → just use pets as-is
     const sortedPets = favouritePetIds.length
       ? [
+        // creates a new array using [...]
           ...pets.filter(p => favouritePetIds.includes(p._id.toString())), // favourites first
           ...pets.filter(p => !favouritePetIds.includes(p._id.toString())) // remaining pets
         ]
@@ -62,12 +64,8 @@ exports.getAllPets = async (req, res) => {
     
     const recommendedPet = await getTopFavouritePet(favourites);
 
-    res.render("pet/home-display", {
-      pets: sortedPets,
-      favourites: favouritePetIds,
-      recommendedPet
-    });
-
+    res.render("pet/home-display", {pets: sortedPets,favourites: favouritePetIds,recommendedPet}
+    );
   } catch (err) {
     console.error(err);
     res.send("Error loading pets");
@@ -91,8 +89,8 @@ exports.toggleFavourite = async (req, res) => {
 // Get details for more info page
 exports.getPetDetails = async (req, res) => {
   try {
-    const petId = req.params.id;
-    const userId = req.session.userId;
+    const petId = req.params.id; // From URL
+    const userId = req.session.userId; //From sesssion
 
     const pet = await Pet.findById(petId);
     if (!pet) return res.send("Pet not found");
@@ -111,12 +109,8 @@ exports.getPetDetails = async (req, res) => {
         }
     }
 
-    res.render("pet/pet-details", {
-      pet,
-      favourites,
-      viewCount
-    });
-
+    res.render("pet/pet-details", {pet,favourites,viewCount}
+    );
   } catch (err) {
     console.error(err);
     res.send("Error loading pet details");
